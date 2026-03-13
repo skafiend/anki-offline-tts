@@ -16,7 +16,7 @@ The addon uses **Chatterbox-TTS** to generate audio files:
 ```
 
 ### The LJ Speech Dataset
-A portion of this dataset was used for zero shot voice cloning:
+A portion of this dataset was used in the project:
 
 ```bibtex
 @misc{ljspeech17,
