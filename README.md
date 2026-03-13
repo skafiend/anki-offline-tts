@@ -3,7 +3,7 @@
 This project uses the following datasets and models:
 
 ### Chatterbox-TTS
-The addon uses **Chatterbox-TTS**:
+The addon uses **Chatterbox-TTS** to generate audio files:
 
 ```bibtex
 @misc{chatterboxtts2025,
