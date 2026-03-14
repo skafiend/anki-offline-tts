@@ -225,9 +225,7 @@ HSA_OVERRIDE_GFX_VERSION=11.0.0 python3 create_audio.py
 
 ### Test 
 
-Create a new python script and run it in the virtual environment.
-
-> *ROCm diagnostic script provided by [Fabio Damico](https://gist.github.com/damico/484f7b0a148a0c5f707054cf9c0a0533).*
+Create a new python script and run it in the virtual environment:
 
 ```bash
 python <script-name>.py
@@ -309,6 +307,7 @@ Everything fine! You can run PyTorch code inside of:
 --->  gfx1102
 ```
 
+> *ROCm diagnostic script provided by [Fabio Damico](https://gist.github.com/damico/484f7b0a148a0c5f707054cf9c0a0533).*
 
 ## Acknowledgements & Citations
 
