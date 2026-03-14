@@ -89,11 +89,22 @@ TypeError: 'NoneType' object is not callable
 
 ## Setting up add-on
 
-> If you're using the flatpak version and getting funny paths like this `/run/user/1000/doc/ea9d1517/python` while setting up the add-on, open **Flatseal** and add permissions to let **Anki** see the real paths. Restart Anki afterward to **apply** the changes.
+### Flatpak
+
+- The addon requires `flatpak-spawn` to run the external python script to generate audio. On Fedora you can simply install it by running this command in the terminal:
+
+```bash
+sudo dnf install flatpak-spawn
+```
+
+- You need to add extra permissions to the filesystem to avoid lines like `/run/user/1000/doc/ea9d1517/python` while setting up the paths to a virtual environment and the model
+```
+flatpak override --user net.ankiweb.Anki --filesystem=<path to>/models/chatterbox/:ro --filesystem=<path to>/virt_env/chatterbox/:ro
+```
 
 ## Acknowledgements & Citations
 
-This project uses the following datasets and models: test
+This project uses the following datasets and models:
 
 ### Chatterbox-TTS
 The addon uses **Chatterbox-TTS** to generate audio files:
