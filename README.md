@@ -6,7 +6,7 @@ Conda is a powerful command line tool for package and environment management. We
 
 `conda` installers for Linux, Windows and MacOS are available on [their website](https://www.anaconda.com/download/success?reg=skipped). Just choose minimal installer (Miniconda) and run it with default parameters. On Linux/MacOS you need to make the file executable first `chmod +x Miniconda3-latest-Linux-x86_64.sh`. 
 
-> [How to install miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install)
+[How to install miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install)
 
 ## Setting up ChatterboxTTS
 
