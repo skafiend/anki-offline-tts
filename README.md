@@ -207,6 +207,7 @@ Before we can run an application that depends on ROCm, we need to present our GP
 - for RDNA 1 based GPUs and APUs `HSA_OVERRIDE_GFX_VERSION=10.1.0`
 - for RDNA 2 based GPUs and APUs `HSA_OVERRIDE_GFX_VERSION=10.3.0`
 - for RDNA 3 based GPUs and APUs `HSA_OVERRIDE_GFX_VERSION=11.0.0`
+
 You can try to find your GPU in the table https://rocm.docs.amd.com/en/latest/reference/gpu-arch-specs.html
 
 > Setting up the variable should eliminate the error `Compile with `TORCH_USE_HIP_DSA` to enable device-side assertions`
