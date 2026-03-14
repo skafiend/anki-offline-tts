@@ -185,7 +185,7 @@ def generate_audio_batch(
     # Default to 0 (no effect on Unix)
     creation_flags = 0
     if sys.platform == "win32":
-        creation_flags = (subprocess.CREATE_NO_WINDOW,)
+        creation_flags = subprocess.CREATE_NO_WINDOW
 
     print("\nScript args:", args)
 

@@ -152,9 +152,9 @@ class Preview(QDialog):
         # slider <-> spinbox
         self._sync_slider_to_spinbox(self.ui.sld_temp, self.ui.sb_temp)
 
-        ### ROCm
+        ### ROCm support. Setting HSA_OVERRIDE
         if sys.platform == "linux":
-            self.ui.hor_layout_hsa.setEnabled(True)
+            self._toggle_hsa_settings(True)
             self.ui.le_set_hsa.setText(cfg.hsa_version)
             # 0 - number permitted, but not required
             # 9 - number required
@@ -163,7 +163,8 @@ class Preview(QDialog):
             qconnect(self.ui.le_set_hsa.editingFinished, self._set_hsa_version)
             qconnect(self.ui.ck_set_hsa.clicked, self._change_hsa_status)
         else:
-            # Windows or OSx don't have full ROCm support
+            # Windows or OSx don't have full ROCm support as far as I know
+            self._toggle_hsa_settings(False)
             self.ui.hor_layout_hsa.setEnabled(False)
 
         ## Presets
@@ -180,6 +181,12 @@ class Preview(QDialog):
         )
 
         print(f"\n{type(self).__name__} children: ", len(parent.findChildren(Preview)))
+
+    def _toggle_hsa_settings(self, state: bool):
+        self.ui.hor_layout_hsa.setEnabled(state)
+        self.ui.ck_set_hsa.setVisible(state)
+        self.ui.le_set_hsa.setVisible(state)
+        self.ui.lb_set_hsa.setVisible(state)
 
     def _set_up_progress(self):
         self.ui.prg_audio_preview.setMinimum(0)

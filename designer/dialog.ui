@@ -409,7 +409,7 @@
         </property>
         <layout class="QHBoxLayout" name="hor_layout_hsa">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="lb_set_hsa">
            <property name="text">
             <string>HSA_OVERRIDE_GFX_VERSION:</string>
            </property>
