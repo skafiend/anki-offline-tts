@@ -199,7 +199,30 @@ cd chatterbox
 pip --no-cache install -e .
 ```
 
-#### Test 
+### Environment variables
+
+Before we can run an application that depends on ROCm, we need to present our GPU as supported. This requires setting HSA_OVERRIDE_GFX_VERSION environment variable. (https://discuss.linuxcontainers.org/t/rocm-and-pytorch-on-amd-apu-or-gpu-ai/19743)
+
+- for GCN 5th gen based GPUs and APUs `HSA_OVERRIDE_GFX_VERSION=9.0.0`
+- for RDNA 1 based GPUs and APUs `HSA_OVERRIDE_GFX_VERSION=10.1.0`
+- for RDNA 2 based GPUs and APUs `HSA_OVERRIDE_GFX_VERSION=10.3.0`
+- for RDNA 3 based GPUs and APUs `HSA_OVERRIDE_GFX_VERSION=11.0.0`
+You can try to find your GPU in the table https://rocm.docs.amd.com/en/latest/reference/gpu-arch-specs.html
+
+> Setting up the variable should eliminate the error `Compile with `TORCH_USE_HIP_DSA` to enable device-side assertions`
+
+I'm using Radeon RX 7600, so `HSA_OVERRIDE_GFX_VERSION=11.0.0` is my choice
+
+You can either add `HSA_OVERRIDE_GFX_VERSION=11.0.0` to your ~/.profile
+```
+export HSA_OVERRIDE_GFX_VERSION=11.0.0
+```
+or set it up before running the script
+```
+HSA_OVERRIDE_GFX_VERSION=11.0.0 python3 create_audio.py
+```
+
+### Test 
 
 Create a new python script and run it in the virtual environment.
 
@@ -283,28 +306,6 @@ Everything fine! You can run PyTorch code inside of:
 --->  gfx1102
 ```
 
-### Environment variables
-
-Before we can run an application that depends on ROCm, we need to present our GPU as supported. This requires setting HSA_OVERRIDE_GFX_VERSION environment variable. (https://discuss.linuxcontainers.org/t/rocm-and-pytorch-on-amd-apu-or-gpu-ai/19743)
-
-- for GCN 5th gen based GPUs and APUs `HSA_OVERRIDE_GFX_VERSION=9.0.0`
-- for RDNA 1 based GPUs and APUs `HSA_OVERRIDE_GFX_VERSION=10.1.0`
-- for RDNA 2 based GPUs and APUs `HSA_OVERRIDE_GFX_VERSION=10.3.0`
-- for RDNA 3 based GPUs and APUs `HSA_OVERRIDE_GFX_VERSION=11.0.0`
-You can try to find your GPU in the table https://rocm.docs.amd.com/en/latest/reference/gpu-arch-specs.html
-
-> Setting up the variable should eliminate the error `Compile with `TORCH_USE_HIP_DSA` to enable device-side assertions`
-
-I'm using Radeon RX 7600, so `HSA_OVERRIDE_GFX_VERSION=11.0.0` is my choice
-
-You can either add `HSA_OVERRIDE_GFX_VERSION=11.0.0` to your ~/.profile
-```
-export HSA_OVERRIDE_GFX_VERSION=11.0.0
-```
-or set it up before running the script
-```
-HSA_OVERRIDE_GFX_VERSION=11.0.0 python3 create_audio.py
-```
 
 ## Acknowledgements & Citations
 
