@@ -6,21 +6,7 @@ Conda is a powerful command line tool for package and environment management. We
 
 `conda` installers for Linux, Windows and MacOS are available on [their website](https://www.anaconda.com/download/success?reg=skipped). Just choose minimal installer (Miniconda) and run it with default parameters. On Linux/MacOS you need to make the file executable first `chmod +x Miniconda3-latest-Linux-x86_64.sh`. 
 
-> [docs.conda.io#installing-conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html#installing-conda)
-
-#### Windows
-
-From the start menu choose "Anaconda Powershell Prompt". Accept the ToS and you're ready to go.
-
-#### Linux/MacOS
-
-The installer prompts “Do you wish the installer to initialize Miniconda3 by running conda init?” Answer “yes”.
-
-> If you enter “no”, then conda will not modify your shell scripts at all. In order to initialize after the installation process is done, first run `source miniconda3/bin/activate` and then run `conda init`.
-
-You custom environments will be right here `miniconda3/envs/`
-
-> If you're installing conda from a repository, it stores environments in "~/.conda/envs"
+> [How to install miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install)
 
 ## Setting up ChatterboxTTS
 
