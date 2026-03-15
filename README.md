@@ -375,7 +375,7 @@ The regular expressions are applied from top to bottom, so if you need to do a r
 
 ### Warning
 
-If you kill the anki by using task manager while generating audio, the external python script (<path to virt env/python.exe> will stay in the memory for a time sufficient to generate one audio file. Please use the dedicated stop button to interrupt the process.
+If you kill the anki by using task manager while generating audio, the external python script <path to virt env/python.exe> will stay in the memory for a time sufficient to generate one audio file. Please use the dedicated stop button to interrupt the process.
 
 ## Flatpak
 
