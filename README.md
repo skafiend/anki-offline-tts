@@ -369,13 +369,7 @@ The regular expressions are applied from top to bottom, so if you need to do a r
 
 ### Debug mode
 
-- Linux: running Anki in a terminal should be enough
-
-```
-anki
-
-flatpak run net.ankiweb.Anki
-```
+- Linux: running Anki in a terminal should be enough `flatpak run net.ankiweb.Anki` or `anki`
 
 - Windows: You need to run Anki using `anki-console.exe` instead of `anki` in the root folder
 
