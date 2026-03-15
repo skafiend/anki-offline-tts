@@ -10,7 +10,7 @@
     -   **Model Weights:** ~10 GB (ChatterboxTTS).
     -   **Virtual Environment:** ~7 GB for standard setups, or up to **20 GB** for ROCm/GPU dependencies.
 
-## Conda
+# Conda
 
 Conda is a powerful command line tool for package and environment management. We need it, because chatterbox is finicky about what python version you use.
 
@@ -99,9 +99,9 @@ ta.save("test-1.wav", wav, model.sr)
 TypeError: 'NoneType' object is not callable
 ```
 
-## Setting up add-on
+# Setting up add-on
 
-### Flatpak
+## Flatpak
 
 - The addon requires `flatpak-spawn` to run the external python script to generate audio. On Fedora you can simply install it by running this command in the terminal:
 
@@ -114,7 +114,7 @@ sudo dnf install flatpak-spawn
 flatpak override --user net.ankiweb.Anki --filesystem=<path to>/models/chatterbox/:ro --filesystem=<path to>/virt_env/chatterbox/:ro
 ```
 
-## ROCm
+# ROCm
 
 ROCm (Radeon Open Compute) is AMD's open-source alternative to NVIDIA's proprietary CUDA platform. If you have a Radeon GPU and you're using Linux this part is for you.
 
@@ -122,7 +122,7 @@ https://rocm.docs.amd.com/en/latest/reference/gpu-arch-specs.html
 
 > I don't know if it's possible to set up ROCm and Chatterbox on Windows even though the table from above apllies to Windows and Linux. If you manage to set it up, do let me know and I'll update the guide.
 
-### Dependencies
+## Dependencies
 
 I show how to set it up on Fedora 42+, in other distibutions the names of the packages will be slightly different. Nonetheless, everything after this part should work on any Linux distribution.
 
@@ -148,7 +148,7 @@ Version         : 6.3.0
 Description     : ROCm system info utility
 ```
 
-### Create groups and add your user to them
+## Create groups and add your user to them
 
 ```bash
 sudo usermod -a -G render $LOGNAME
@@ -157,14 +157,14 @@ sudo usermod -a -G video $LOGNAME
 
 Reboot and after that check that ROCm is installed properly with command `rocminfo`
 
-### Create and activate a new conda environment
+## Create and activate a new conda environment
 
 ```bash
 conda create -n chatterbox python=3.11
 conda activate chatterbox
 ```
 
-### PyTorch
+## PyTorch
 
 ChatterBox relies on torch==2.6.0 and torchausio==2.6.0 (https://github.com/resemble-ai/chatterbox/blob/master/pyproject.toml), and the latest rocm version compatible with them both is 6.2.4
 
@@ -200,7 +200,7 @@ https://download.pytorch.org/whl/rocm6.2.4/torch
 torch-2.6
 ```
 
-### Install Chatterbox TTS
+## Install Chatterbox TTS
 
 
 ```bash
@@ -212,7 +212,7 @@ pip --no-cache install -e .
 
 > Don't delete or move the chatterbox folder after installing. If you did that, just reinstall it `pip --no-cache install -e` in the conda environment one more time.
 
-### Environment variables
+## Environment variables
 
 Before we can run an application that depends on ROCm, we need to present our GPU as supported. This requires setting HSA_OVERRIDE_GFX_VERSION environment variable. (https://discuss.linuxcontainers.org/t/rocm-and-pytorch-on-amd-apu-or-gpu-ai/19743)
 
@@ -236,7 +236,7 @@ or set it up before running the script
 HSA_OVERRIDE_GFX_VERSION=11.0.0 python3 create_audio.py
 ```
 
-### Test 
+## Test 
 
 Create a new python script and run it in the virtual environment:
 
@@ -322,11 +322,11 @@ Everything fine! You can run PyTorch code inside of:
 
 > *ROCm diagnostic script provided by [Fabio Damico](https://gist.github.com/damico/484f7b0a148a0c5f707054cf9c0a0533).*
 
-## Acknowledgements & Citations
+# Acknowledgements & Citations
 
 This project uses the following datasets and models:
 
-### Chatterbox-TTS
+## Chatterbox-TTS
 The addon uses **Chatterbox-TTS** to generate audio files:
 
 ```bibtex
@@ -339,7 +339,7 @@ The addon uses **Chatterbox-TTS** to generate audio files:
 }
 ```
 
-### The LJ Speech Dataset
+## The LJ Speech Dataset
 A portion of this dataset was used in the project:
 
 ```bibtex
