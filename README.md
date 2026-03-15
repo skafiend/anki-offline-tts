@@ -188,9 +188,8 @@ https://download.pytorch.org/whl/rocm6.2.4/torch
 torch-2.6
 ```
 
-### Chatterbox TTS. 
+### Install Chatterbox TTS
 
-Don't delete or move the chatterbox folder after installing. If you did that, just reinstall it `pip --no-cache install -e` in the conda environment one more time.
 
 ```bash
 cd .conda
@@ -198,6 +197,8 @@ git clone https://github.com/resemble-ai/chatterbox.git
 cd chatterbox
 pip --no-cache install -e .
 ```
+
+> Don't delete or move the chatterbox folder after installing. If you did that, just reinstall it `pip --no-cache install -e` in the conda environment one more time.
 
 ### Environment variables
 
