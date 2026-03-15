@@ -10,7 +10,7 @@
     -   **Model Weights:** ~10 GB (ChatterboxTTS).
     -   **Virtual Environment:** ~7 GB for standard setups, or up to **20 GB** for ROCm/GPU dependencies.
 
-# Conda
+# Virtual environment
 
 Conda is a powerful command line tool for package and environment management. We need it, because chatterbox is finicky about what python version you use.
 
