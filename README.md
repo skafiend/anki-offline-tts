@@ -1,4 +1,4 @@
-## Installation & Requirements
+# Installation & Requirements
 
 -   **Environment Management:** Uses **Conda** to create a dedicated virtual environment, ensuring all dependencies are isolated and stable.
 -   **Hardware Acceleration:**
