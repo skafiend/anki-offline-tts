@@ -322,7 +322,7 @@ sudo dnf install flatpak-spawn
 flatpak override --user net.ankiweb.Anki --filesystem=<path to>/models/chatterbox/:ro --filesystem=<path to>/virt_env/chatterbox/:ro
 ```
 
-**Credits & Attribution** 
+# Credits & Attribution
 
 This addon is powered by the following open-source projects: 
 
