@@ -10,6 +10,20 @@
     -   **Model Weights:** ~10 GB (ChatterboxTTS).
     -   **Virtual Environment:** ~7 GB for standard setups, or up to **20 GB** for ROCm/GPU dependencies.
 
+## Tested Environments
+
+The following configurations have been verified to work with this addon:
+
+-   **Linux (Fedora 43)**
+    -   **Anki Version:** `25.09.2` (Build `3890e12c`)
+    -   **Python/Qt:** `3.13.11` (Qt `6.10.2`) and `3.14.3` (Qt `6.10.2`)
+    -   **Installation Methods:** Flatpak and `pip` versions
+    -   **Hardware Accel:** Verified both with and without **ROCm**
+
+-   **Windows**
+    -   **Anki Version:** `25.09.2`
+    -   **Python/Qt:** `3.13.5` (Qt `6.9.1`)
+
 # Prerequisites
 
 Conda is a powerful command line tool for package and environment management. We need it, because chatterbox is finicky about what python version you use.
@@ -314,7 +328,7 @@ You can simply unpack the addon in your addons folder and it should work out of 
 - macOS: `~/Library/Application Support/Anki2/addons21`
 - Linux: `~/.local/share/Anki2/addons21`
 
-To open an addon window, go to Browser -> Edit -> ChatterBox: Generate audio
+To open an addon window, go to Browser -> Edit -> ChatterBox: Generate audio.
 
 ## Settings
 
@@ -353,7 +367,23 @@ The regular expressions are applied from top to bottom, so if you need to do a r
     - On Linux/MacOS: </path to virtual environment/bin/python>
     - On Windows: </path to virtual environment/python.exe>
 
-- HSA_OVERRIDE_GFX_VERSION: By default it's hidden unless you're using Linux. Enable it only if you set up the virtual enviroment to handle it. 
+- HSA_OVERRIDE_GFX_VERSION: By default it's hidden unless you're using Linux. Enable it only if you set up the virtual enviroment to handle ROCm.
+
+### Debug mode
+
+- Linux: running Anki in a terminal should be enough
+
+```
+anki
+
+flatpak run net.ankiweb.Anki
+```
+
+- Windows: You need to run Anki using `anki-console.exe` instead of `anki` in the root folder
+
+### Warning
+
+If you kill the anki by using task manager while generating audio, the external python script (<path to virt env/python.exe> will stay in the memory for a time sufficient to generate one audio file. Please use the dedicated stop button to interrupt the process.
 
 ## Flatpak
 
