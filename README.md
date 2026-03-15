@@ -108,7 +108,7 @@ ROCm (Radeon Open Compute) is AMD's open-source alternative to NVIDIA's propriet
 
 https://rocm.docs.amd.com/en/latest/reference/gpu-arch-specs.html
 
-> I don't know if it's possible to set up ROCm and Chatterbox on Windows even though the table from above apllies to Windows and Linux. If you manage to set it up, do let me know and I update the guide.
+> I don't know if it's possible to set up ROCm and Chatterbox on Windows even though the table from above apllies to Windows and Linux. If you manage to set it up, do let me know and I'll update the guide.
 
 ### Dependencies
 
