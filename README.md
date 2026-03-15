@@ -55,7 +55,7 @@ python3 -c "from huggingface_hub import snapshot_download; snapshot_download(rep
 python3 -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='ResembleAI/chatterbox-turbo', local_dir='chatterbox-turbo')"
 ```
 
-## Test
+### Test
 
  Try running the following script in the virtual environment. It should generate an audio file in the same folder:
  
@@ -87,7 +87,7 @@ wav = model.generate(text)
 ta.save("test-1.wav", wav, model.sr)
 ```
 
-## Errors
+### Errors
 
 #### TypeError: 'NoneType' object is not callable
 
