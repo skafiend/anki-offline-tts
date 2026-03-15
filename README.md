@@ -55,7 +55,7 @@ conda activate C:\Users\test\miniconda3\envs\chatterbox_test
 
 - ChatterboxMultilingualTTS and ChatterboxTTS
 
-> ChatterboxTTS supports only English, but it adds fewer artifacts than ChatterboxMultilingualTTS. 
+> The addon is currently using this model to generate audio. ChatterboxTTS supports only English, but it adds fewer artifacts than ChatterboxMultilingualTTS.
 
 ```bash
 python3 -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='ResembleAI/chatterbox', local_dir='chatterbox')"
@@ -63,8 +63,6 @@ python3 -c "from huggingface_hub import snapshot_download; snapshot_download(rep
 
  - Chatterbox Turbo
    
-> I don't use it, because even though it does generate faster than the original model, the audio samples sound more robotic.
-
 ```bash
 python3 -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='ResembleAI/chatterbox-turbo', local_dir='chatterbox-turbo')"
 ```
