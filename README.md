@@ -350,8 +350,8 @@ The regular expressions are applied from top to bottom, so if you need to do a r
 ![virt](img/04_virtual.png)
 
 - Python executable: this is where you select the python executable from the virtual enviroment that you set up before.
-    - On Linux/MacOS: </<path to virtual environment>/bin/python>
-    - On Windows: </<path to virtual environment>/python.exe>
+    - On Linux/MacOS: </path to virtual environment/bin/python>
+    - On Windows: </path to virtual environment/python.exe>
 
 - HSA_OVERRIDE_GFX_VERSION: By default it's hidden unless you're using Linux. Enable it only if you set up the virtual enviroment to handle it. 
 
