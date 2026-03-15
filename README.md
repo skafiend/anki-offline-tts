@@ -187,7 +187,6 @@ torch-2.6
 
 ### Install Chatterbox TTS
 
-
 ```bash
 cd .conda
 git clone https://github.com/resemble-ai/chatterbox.git
@@ -221,7 +220,7 @@ or set it up before running the script
 HSA_OVERRIDE_GFX_VERSION=11.0.0 python3 create_audio.py
 ```
 
-### Test 
+### Check ROCm support
 
 Create a new python script and run it in the virtual environment:
 
@@ -308,6 +307,53 @@ Everything fine! You can run PyTorch code inside of:
 > *ROCm diagnostic script provided by [Fabio Damico](https://gist.github.com/damico/484f7b0a148a0c5f707054cf9c0a0533).*
 
 # Setting up add-on
+
+You can simply unpack the addon in your addons folder and it should work out of the box.
+
+- Windows: `%APPDATA%\Anki2\addons21`
+- macOS: `~/Library/Application Support/Anki2/addons21`
+- Linux: `~/.local/share/Anki2/addons21`
+
+To open an addon window, go to Browser -> Edit -> ChatterBox: Generate audio
+
+## Settings
+
+### Chatterbox
+
+![chatterbox](img/01_chatterbox.png)
+
+-   **General Use (TTS and Voice Agents):**
+    
+    -   Ensure that the reference clip matches the specified language tag. Otherwise, language transfer outputs may inherit the accent of the reference clip’s language. To mitigate this, set `cfg_weight` to `0`.
+    -   The default settings (`exaggeration=0.5`, `cfg_weight=0.5`) work well for most prompts across all languages.
+    -   If the reference speaker has a fast speaking style, lowering `cfg_weight` to around `0.3` can improve pacing.
+
+-   **Expressive or Dramatic Speech:**
+    
+    -   Try lower `cfg_weight` values (e.g. `~0.3`) and increase `exaggeration` to around `0.7` or higher.
+    -   Higher `exaggeration` tends to speed up speech; reducing `cfg_weight` helps compensate with slower, more deliberate pacing.
+
+### Presets
+
+![presets](img/02_presets.png)
+
+> I'm going to add more options in the future, but for now you can choose only source and destination fields
+
+### Text processing
+
+![text](img/03_text.png)
+
+The regular expressions are applied from top to bottom, so if you need to do a replacement `s/before\(foo\)after/\1/`, make sure it happens at the very end
+
+### Virtual environment
+
+![virt](img/04_virtual.png)
+
+- Python executable: this is where you select the python executable from the virtual enviroment that you set up before.
+    - On Linux/MacOS: /<path to virtual environment>/bin/python
+    - On Windows: /<path to virtual environment>/python.exe
+
+- HSA_OVERRIDE_GFX_VERSION: By default it's hidden unless you're using Linux. Enable it only if you set up the virtual enviroment to handle it. 
 
 ## Flatpak
 

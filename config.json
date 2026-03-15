@@ -5,8 +5,9 @@
   "presets": 
     {"fallback": {"source": "Example", "destination": "Audio", "language": "English", "voice": "en_default.mp3"}},
   "regex_rules": [{"Pattern": "&nbsp;", "Replace": " ", "Comment": "Replace non-breaking spaces with ' '"},
-    {"Pattern": "<\\/?span.*?>|<br\\s*/?>", "Replace": " ", "Comment": "Replace <span> and <br> tags with ' '"},
     {"Pattern": "\\[.*\\]", "Replace": "", "Comment": "Ignore text in []."},
+    {"Pattern": "<\\/?span.*?>", "Replace": "", "Comment": "Remove <span> tags"},
+    {"Pattern": "<br\\s*/?>", "Replace": " ", "Comment": "Replace <br> tags with ' '"},
     {"Pattern": "(\\(|\\))", "Replace": "", "Comment": "Remove (). Chatterbox puts emphasis on text inside ()"},
     {"Pattern": "{{[^{}:]*::([^{}:]*)(::[^{}:]*)?}}", "Replace": "\\1", "Comment": "Remove cloze brackets {{c1::...}}"},
     {"Pattern": "<div.*?>(.*?)<\\/div>", "Replace": "\\1", "Comment": "Remove complete <div> blocks"},
