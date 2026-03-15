@@ -349,7 +349,7 @@ To open an addon window, go to Browser -> Edit -> ChatterBox: Generate audio.
 
 ![presets](img/02_presets.png)
 
-> I'm going to add more options in the future, but for now you can choose only source and destination fields
+I'm going to add more options in the future, but for now you can choose only source and destination fields
 
 ### Text processing
 
