@@ -1,13 +1,14 @@
-## Installation & Requirements
+**Installation & Requirements** 
 
 -   **Environment Management:** Uses **Conda** to create a dedicated virtual environment, ensuring all dependencies are isolated and stable.
--   **NVIDIA (Windows/Linux):** Full **CUDA support** for high-speed generation on NVIDIA GPUs.
--   **AMD (Linux):** Supports **ROCm** for GPU acceleration on compatible AMD hardware.
--   **Apple Silicon (macOS):** Leverages **MPS (Metal Performance Shaders)** for local acceleration.
--   **Fallback:** Systems without a compatible GPU will default to **CPU inference**.
+-   **Hardware Acceleration:**
+    -   **NVIDIA (Windows/Linux):** Full **CUDA support** for high-speed generation.
+    -   **AMD (Linux):** Supports **ROCm** for GPU acceleration on compatible hardware.
+    -   **Apple Silicon (macOS):** Leverages **MPS** (Metal Performance Shaders).
+    -   **Fallback:** Systems without a compatible GPU will default to **CPU inference**.
 -   **Storage Space:** Please ensure you have adequate disk space before installation:
     -   **Model Weights:** ~10 GB (ChatterboxTTS).
-    -   **Virtual Environment:** ~7 GB for standard installations, or up to **20 GB** when configured with ROCm/GPU dependencies.
+    -   **Virtual Environment:** ~7 GB for standard setups, or up to **20 GB** for ROCm/GPU dependencies.
 
 ## Conda
 
