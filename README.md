@@ -322,13 +322,11 @@ sudo dnf install flatpak-spawn
 flatpak override --user net.ankiweb.Anki --filesystem=<path to>/models/chatterbox/:ro --filesystem=<path to>/virt_env/chatterbox/:ro
 ```
 
-# Acknowledgements & Citations
+**Credits & Attribution** 
 
-This project uses the following datasets and models:
+This addon is powered by the following open-source projects: 
 
-## Chatterbox-TTS
-The addon uses **Chatterbox-TTS** to generate audio files:
-
+-   **Chatterbox-TTS** by Resemble AI (2025). A high-performance text-to-speech engine designed for expressive local inference.
 ```bibtex
 @misc{chatterboxtts2025,
   author       = {{Resemble AI}},
@@ -338,10 +336,7 @@ The addon uses **Chatterbox-TTS** to generate audio files:
   note         = {GitHub repository}
 }
 ```
-
-## The LJ Speech Dataset
-A portion of this dataset was used in the project:
-
+-   **The LJ Speech Dataset** by Keith Ito and Linda Johnson (2017). A public domain dataset of 13,100 short audio clips used for training high-quality speech models.
 ```bibtex
 @misc{ljspeech17,
   author       = {Keith Ito and Linda Johnson},
