@@ -99,22 +99,7 @@ ta.save("test-1.wav", wav, model.sr)
 TypeError: 'NoneType' object is not callable
 ```
 
-# Setting up add-on
-
-## Flatpak
-
-- The addon requires `flatpak-spawn` to run the external python script to generate audio. On Fedora you can simply install it by running this command in the terminal:
-
-```bash
-sudo dnf install flatpak-spawn
-```
-
-- You need to add extra permissions to the filesystem to avoid lines like `/run/user/1000/doc/ea9d1517/python` while setting up the paths to a virtual environment and the model
-```
-flatpak override --user net.ankiweb.Anki --filesystem=<path to>/models/chatterbox/:ro --filesystem=<path to>/virt_env/chatterbox/:ro
-```
-
-# ROCm
+## ROCm
 
 ROCm (Radeon Open Compute) is AMD's open-source alternative to NVIDIA's proprietary CUDA platform. If you have a Radeon GPU and you're using Linux this part is for you.
 
@@ -148,7 +133,7 @@ Version         : 6.3.0
 Description     : ROCm system info utility
 ```
 
-## Create groups and add your user to them
+### Create groups and add your user to them
 
 ```bash
 sudo usermod -a -G render $LOGNAME
@@ -157,14 +142,14 @@ sudo usermod -a -G video $LOGNAME
 
 Reboot and after that check that ROCm is installed properly with command `rocminfo`
 
-## Create and activate a new conda environment
+### Create and activate a new conda environment
 
 ```bash
 conda create -n chatterbox python=3.11
 conda activate chatterbox
 ```
 
-## PyTorch
+### PyTorch
 
 ChatterBox relies on torch==2.6.0 and torchausio==2.6.0 (https://github.com/resemble-ai/chatterbox/blob/master/pyproject.toml), and the latest rocm version compatible with them both is 6.2.4
 
@@ -200,7 +185,7 @@ https://download.pytorch.org/whl/rocm6.2.4/torch
 torch-2.6
 ```
 
-## Install Chatterbox TTS
+### Install Chatterbox TTS
 
 
 ```bash
@@ -212,7 +197,7 @@ pip --no-cache install -e .
 
 > Don't delete or move the chatterbox folder after installing. If you did that, just reinstall it `pip --no-cache install -e` in the conda environment one more time.
 
-## Environment variables
+### Environment variables
 
 Before we can run an application that depends on ROCm, we need to present our GPU as supported. This requires setting HSA_OVERRIDE_GFX_VERSION environment variable. (https://discuss.linuxcontainers.org/t/rocm-and-pytorch-on-amd-apu-or-gpu-ai/19743)
 
@@ -236,7 +221,7 @@ or set it up before running the script
 HSA_OVERRIDE_GFX_VERSION=11.0.0 python3 create_audio.py
 ```
 
-## Test 
+### Test 
 
 Create a new python script and run it in the virtual environment:
 
@@ -321,6 +306,21 @@ Everything fine! You can run PyTorch code inside of:
 ```
 
 > *ROCm diagnostic script provided by [Fabio Damico](https://gist.github.com/damico/484f7b0a148a0c5f707054cf9c0a0533).*
+
+# Setting up add-on
+
+## Flatpak
+
+- The addon requires `flatpak-spawn` to run the external python script to generate audio. On Fedora you can simply install it by running this command in the terminal:
+
+```bash
+sudo dnf install flatpak-spawn
+```
+
+- You need to add extra permissions to the filesystem to avoid lines like `/run/user/1000/doc/ea9d1517/python` while setting up the paths to a virtual environment and the model
+```
+flatpak override --user net.ankiweb.Anki --filesystem=<path to>/models/chatterbox/:ro --filesystem=<path to>/virt_env/chatterbox/:ro
+```
 
 # Acknowledgements & Citations
 
