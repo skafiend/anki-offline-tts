@@ -9,8 +9,6 @@
 -   **Storage Space:** Please ensure you have adequate disk space before installation:
     -   **Model Weights:** ~10 GB (ChatterboxTTS).
     -   **Virtual Environment:** ~7 GB for standard setups, or up to **20 GB** for ROCm/GPU dependencies.
- 
-    -   test
 
 ## Tested Environments
 
