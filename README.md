@@ -387,7 +387,7 @@ sudo dnf install flatpak-spawn
 
 - You need to add extra permissions to the filesystem to avoid lines like `/run/user/1000/doc/ea9d1517/python` while setting up the paths to a virtual environment and the model
 ```
-flatpak override --user net.ankiweb.Anki --filesystem=<path to>/models/chatterbox/:ro --filesystem=<path to>/virt_env/chatterbox/:ro
+flatpak override --user net.ankiweb.Anki --filesystem=<path to>/models/chatterbox/ --filesystem=<path to>/virt_env/chatterbox/
 ```
 
 # Credits & Attribution
