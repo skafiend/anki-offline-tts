@@ -11,10 +11,7 @@ import time
 import hashlib
 
 from threading import Event
-from .config import cfg, load_psutil, script_to_run
-
-load_psutil()
-import psutil  # noqa E402
+from .config import cfg, script_to_run
 
 
 def sanitize_text(text: str, regex: list[dict[str, str]]) -> str:
@@ -63,31 +60,20 @@ def generate_hash(path: str) -> str:
     return digest.hexdigest()
 
 
-def kill_proc_tree(pid, terminate_parent=True):
-    try:
-        parent = psutil.Process(pid)
-        children = parent.children(recursive=True)
-        all_pros: list[psutil.Process] = children + (
-            [parent] if terminate_parent else []
-        )
-
-        print(f"\nParent: {parent}\nChildren: {children}\n")
-
-        for p in all_pros:
-            if sys.platform == "win32":  # Windows
-                p.terminate()
-            else:
-                # if the script was launched via flatpak-spawn
-                # simple terminate() or kill() doesn't do the job
-                p.send_signal(signal.SIGINT)
-
-        # Wait briefly for them to stop; if they don't, force kill
-        gone, alive = psutil.wait_procs(all_pros, timeout=5)
-        print(f"\nTerminated processes: {gone}, \nAlive: {alive}")
-        for p in alive:
-            p.kill()
-    except psutil.NoSuchProcess:
-        print(f"{pid} doesn't exist")
+def terminate_process(process, timeout=3):
+    """Safely terminates a subprocess with a fallback to kill."""
+    if process and process.poll() is None:
+        try:
+            process.terminate()
+            process.wait(timeout=timeout)
+            print(f"Process {process.pid} terminated gracefully.")
+        except subprocess.TimeoutExpired:
+            print(f"Process {process.pid} timed out. Killing...")
+            process.kill()
+            process.wait()
+            print(f"Process {process.pid} killed.")
+    else:
+        print("Process is already finished or doesn't exist.")
 
 
 def missing_fields(note: Note, fields: list[str]) -> list[str] | None:
@@ -232,9 +218,7 @@ def generate_audio_batch(
         raise e
 
     finally:
-        # if we stopped the function by calling raise or return this part still will be executed
-        if process and process.poll() is None:
-            kill_proc_tree(process.pid, True)
+        terminate_process(process)
 
     return 0
 

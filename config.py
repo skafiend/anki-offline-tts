@@ -8,36 +8,6 @@ script_to_run = "tts.py"
 # script_to_run = "tts_turbo.py"
 
 
-def load_psutil():
-    """
-    Dynamically adds the platform-specific psutil library path to sys.path.
-
-    This function detects the current operating system and architecture to
-    locate the appropriate pre-compiled psutil binaries within the 'lib'
-    directory. It supports Windows (x64), Linux (x64), and macOS (Intel/ARM).
-
-    Raises:
-        ImportError: If the current platform is not supported.
-    """
-    base_path = os.path.dirname(__file__)
-    system = platform.system().lower()
-    machine = platform.machine().lower()
-
-    if system == "windows":
-        folder = "win_amd64"
-    elif system == "linux":
-        folder = "manylinux2014_x86_64"
-    elif system == "darwin":  # macOS
-        folder = "macosx_11_0_arm64" if "arm" in machine else "macosx_10_9_x86_64"
-    else:
-        raise ImportError(f"psutils are not supported on the platform {system}")
-
-    lib_path = os.path.join(base_path, "lib", folder)
-
-    if lib_path not in sys.path:
-        sys.path.insert(0, lib_path)
-
-
 class ConfigManager:
     _instance = None
 
