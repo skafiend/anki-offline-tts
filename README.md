@@ -197,17 +197,6 @@ https://download.pytorch.org/whl/rocm6.2.4/torch
 torch-2.6
 ```
 
-### Install Chatterbox TTS
-
-```bash
-cd .conda
-git clone https://github.com/resemble-ai/chatterbox.git
-cd chatterbox
-pip --no-cache install -e .
-```
-
-> Don't delete or move the chatterbox folder after installing. If you did that, just reinstall it `pip --no-cache install -e` in the conda environment one more time.
-
 ### Environment variables
 
 Before we can run an application that depends on ROCm, we need to present our GPU as supported. This requires setting HSA_OVERRIDE_GFX_VERSION environment variable. (https://discuss.linuxcontainers.org/t/rocm-and-pytorch-on-amd-apu-or-gpu-ai/19743)
