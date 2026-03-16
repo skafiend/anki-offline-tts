@@ -379,15 +379,16 @@ If you kill the anki by using task manager while generating audio, the external 
 
 ## Flatpak
 
-- The addon requires `flatpak-spawn` to run the external python script to generate audio. On Fedora you can simply install it by running this command in the terminal:
+- You need to add extra permissions to the filesystem. Anki won't be able to access the virtual environment and the model otherwise:
 
-```bash
-sudo dnf install flatpak-spawn
-```
-
-- You need to add extra permissions to the filesystem to avoid lines like `/run/user/1000/doc/ea9d1517/python` while setting up the paths to a virtual environment and the model
 ```
 flatpak override --user net.ankiweb.Anki --filesystem=<path to>/models/chatterbox/ --filesystem=<path to>/virt_env/chatterbox/
+```
+
+- If you are going to use your GPU to generate audio files:
+
+```
+flatpak override --user --device=all --device=dri net.ankiweb.Anki
 ```
 
 # Credits & Attribution

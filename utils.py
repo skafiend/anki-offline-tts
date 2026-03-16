@@ -148,24 +148,12 @@ def generate_audio_batch(
 
     args = []
 
-    if is_flatpak():
-        args += [
-            "flatpak-spawn",
-            "--host",
-            "--watch-bus",
-        ]
-
     current_env = os.environ.copy()
 
     if is_hsa():
-        if is_flatpak():
-            print(f"HSA_OVERRIDE_GFX_VERSION: {cfg.hsa_version}, Flatpak: True")
-            args += [f"--env=HSA_OVERRIDE_GFX_VERSION={cfg.hsa_version}"]
-            args += ["--env=HF_HUB_OFFLINE=1"]
-        else:
-            print(f"HSA_OVERRIDE_GFX_VERSION: {cfg.hsa_version}, Flatpak: False")
-            current_env["HSA_OVERRIDE_GFX_VERSION"] = cfg.hsa_version
-            current_env["HF_HUB_OFFLINE"] = "1"
+        print(f"HSA_OVERRIDE_GFX_VERSION: {cfg.hsa_version}, Flatpak: {is_flatpak()}")
+        current_env["HSA_OVERRIDE_GFX_VERSION"] = cfg.hsa_version
+        current_env["HF_HUB_OFFLINE"] = "1"
     else:
         print("HSA_OVERRIDE_GFX_VERSION is not applied")
 
