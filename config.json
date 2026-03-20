@@ -5,7 +5,7 @@
   "presets": 
     {"fallback": {"source": "Example", "destination": "Audio", "language": "English", "voice": "en_default.mp3"}},
   "regex_rules": [{"Pattern": "&nbsp;", "Replace": " ", "Comment": "Replace non-breaking spaces with ' '"},
-    {"Pattern": "\\[.*\\]", "Replace": "", "Comment": "Ignore text in []."},
+    {"Pattern": "\\[.*?\\]", "Replace": "", "Comment": "Ignore text in []."},
     {"Pattern": "<\\/?span.*?>", "Replace": "", "Comment": "Remove <span> tags"},
     {"Pattern": "<br\\s*/?>", "Replace": " ", "Comment": "Replace <br> tags with ' '"},
     {"Pattern": "(\\(|\\))", "Replace": "", "Comment": "Remove (). Chatterbox puts emphasis on text inside ()"},

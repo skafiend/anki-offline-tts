@@ -349,11 +349,16 @@ class Preview(QDialog):
         else:
             event.accept()
 
+    # This method triggers when we press Esc
+    def reject(self):
+        self.close()  # This part triggers closeEvent
+
     def _toggle_ui_busy(self, busy: bool):
         """Enables/disables UI elements based on processing state."""
-        self.ui.btn_generate.setEnabled(not busy)
-        self.ui.btn_cancel.setEnabled(busy)
-        self.ui.tabSettings.setDisabled(busy)
+        if not sip.isdeleted(self):
+            self.ui.btn_generate.setEnabled(not busy)
+            self.ui.btn_cancel.setEnabled(busy)
+            self.ui.tabSettings.setDisabled(busy)
 
     def _start_task(self):
         # If we want to regenerate notes again

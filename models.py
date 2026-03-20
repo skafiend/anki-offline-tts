@@ -20,7 +20,7 @@ class ModelAudioTbl(QAbstractTableModel):
 
     # We use this method at least twice:
     # - when we populate the table for a first time
-    # - when presets are changed and we want to update the preview
+    # - when presets are changed and we want to update the preview, we call it directly from the dialog
     def refresh_data(self, ids: list[int]):
         self.beginResetModel()
         self._grid_preview.clear()
