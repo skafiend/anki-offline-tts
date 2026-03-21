@@ -5,6 +5,7 @@ from aqt import (
     QFileDialog,
     QLineEdit,
     QSlider,
+    QSpinBox,
     QStringListModel,
     mw,
     qconnect,
@@ -22,7 +23,7 @@ from .models import ModelAudioTbl, ModelRegexTbl
 
 import os
 
-from .config import cfg
+from .config import ConfigManager, cfg
 
 from aqt.operations import QueryOp
 
@@ -91,62 +92,51 @@ class Preview(QDialog):
 
         ######## Chatterbox ##############################
 
-        # Emotion (exaggeration): 0.25-2.0
-        self.ui.sb_emotion.setSingleStep(0.05)
-        self.ui.sb_emotion.setMinimum(0.25)
-        self.ui.sb_emotion.setMaximum(2.00)
-        self.ui.sb_emotion.setValue(cfg.exaggeration)
-        self.ui.sb_emotion.valueChanged.connect(self._update_exaggeration)
+        # Exaggeration: 0.25 - 2.0
+        self._configure_slider(
+            self.ui.sb_emotion,
+            self.ui.sld_emotion,
+            0.25,
+            2.00,
+            0.05,
+            "exaggeration",
+            100.0,
+        )
 
-        self.ui.sld_emotion.setSingleStep(1)
-        self.ui.sld_emotion.setMinimum(25)
-        self.ui.sld_emotion.setMaximum(200)
-        self.ui.sld_emotion.setValue(int(cfg.exaggeration * 100))
-        self.ui.sld_emotion.sliderReleased.connect(self._update_exaggeration)
-
-        self._sync_slider_to_spinbox(self.ui.sld_emotion, self.ui.sb_emotion)
-
-        # Pace control(cfg_weight): 0.0-1.0
-        self.ui.sb_pace.setSingleStep(0.05)
-        self.ui.sb_pace.setMinimum(0.00)
-        self.ui.sb_pace.setMaximum(1.00)
-        self.ui.sb_pace.setValue(cfg.cfg_weight)
-        self.ui.sb_pace.valueChanged.connect(self._update_cfg_weight)
-
-        self.ui.sld_pace.setSingleStep(1)
-        self.ui.sld_pace.setMinimum(0)
-        self.ui.sld_pace.setMaximum(100)
-        self.ui.sld_pace.setValue(int(cfg.cfg_weight * 100))
-        self.ui.sld_pace.sliderReleased.connect(self._update_cfg_weight)
-
-        self._sync_slider_to_spinbox(self.ui.sld_pace, self.ui.sb_pace)
+        # Pace control (cfg_weight): 0.0 - 1.0
+        self._configure_slider(
+            self.ui.sb_pace,
+            self.ui.sld_pace,
+            0.00,
+            1.00,
+            0.05,
+            "cfg_weight",
+            100.0,
+        )
 
         # Sample randomness (temperature): 0.05 - 5.00
-        self.ui.sb_temp.setSingleStep(0.05)
-        self.ui.sb_temp.setMinimum(0.05)
-        self.ui.sb_temp.setMaximum(5.00)
-        self.ui.sb_temp.setValue(cfg.temp)
-        self.ui.sb_temp.valueChanged.connect(self._update_temp)
-
-        self.ui.sld_temp.setSingleStep(1)
-        self.ui.sld_temp.setMinimum(5)
-        self.ui.sld_temp.setMaximum(500)
-        self.ui.sld_temp.setValue(int(cfg.temp * 100))
-        self.ui.sld_temp.sliderReleased.connect(self._update_temp)
-
-        self._sync_slider_to_spinbox(self.ui.sld_temp, self.ui.sb_temp)
+        self._configure_slider(
+            self.ui.sb_temp,
+            self.ui.sld_temp,
+            0.05,
+            5.00,
+            0.05,
+            "temp",
+            100.0,
+        )
 
         ######## Presets ##############################
+
         ### Fallback preset
         self.ui.le_source.setText(cfg.fallback_src)
         self.ui.le_dest.setText(cfg.fallback_dst)
 
         self.ui.le_source.editingFinished.connect(
-            lambda: self._set_fallback(self.ui.le_source, "fallback_src")
+            lambda: self._set_lineedit(self.ui.le_source, "fallback_src")
         )
 
         self.ui.le_dest.editingFinished.connect(
-            lambda: self._set_fallback(self.ui.le_dest, "fallback_dst")
+            lambda: self._set_lineedit(self.ui.le_dest, "fallback_dst")
         )
 
         # We need to repopulate the combobox before declaring the currentTextChanged signal
@@ -242,7 +232,7 @@ class Preview(QDialog):
     def reject(self):
         self.close()  # This part triggers closeEvent
 
-    def _set_fallback(self, widget: QLineEdit, attr_name: str):
+    def _set_lineedit(self, widget: QLineEdit, attr_name: str):
         text = widget.text()
         print(f"Saving {widget}: {text}")
         setattr(cfg, attr_name, text)
@@ -373,16 +363,48 @@ class Preview(QDialog):
             self.settings_visible = True
 
     ######### Chatterbox ################################################
+    def _configure_slider(
+        self,
+        spinbox: QDoubleSpinBox,
+        slider: QSlider,
+        minimum: float,
+        maximum: float,
+        step: float,
+        parameter: str,
+        factor: float,
+    ):
+        """
+        Synchronizes a QSpinBox and QSlider to control a shared configuration parameter.
 
-    # spinboxes is converted into float numbers, so it's easier to use them
-    def _update_exaggeration(self):
-        cfg.exaggeration = round(self.ui.sb_emotion.value(), 2)
+        Args:
+            spinbox: The spinbox widget for precise input.
+            slider: The slider widget for coarse visual input.
+            minimum: The lower bound for the parameter value.
+            maximum: The upper bound for the parameter value.
+            step: The incremental change allowed for the value.
+            parameter: The attribute name in 'cfg' to be updated.
+            factor: A multiplier (e.g., 100) to map float values to the slider's integer range.
+        """
+        current = getattr(cfg, parameter)
+        spinbox.setSingleStep(step)
+        spinbox.setMinimum(minimum)
+        spinbox.setMaximum(maximum)
+        spinbox.setValue(current)
 
-    def _update_cfg_weight(self):
-        cfg.cfg_weight = round(self.ui.sb_pace.value(), 2)
+        slider.setSingleStep(int(step * factor))
+        slider.setMinimum(int(minimum * factor))
+        slider.setMaximum(int(maximum * factor))
+        slider.setValue(int(current * factor))
 
-    def _update_temp(self):
-        cfg.temp = round(self.ui.sb_temp.value(), 2)
+        spinbox.valueChanged.connect(
+            lambda: setattr(cfg, parameter, round(spinbox.value(), 2))
+        )
+
+        slider.sliderReleased.connect(
+            lambda: setattr(cfg, parameter, round(spinbox.value(), 2))
+        )
+
+        self._sync_slider_to_spinbox(slider, spinbox)
 
     @staticmethod
     def _sync_slider_to_spinbox(
