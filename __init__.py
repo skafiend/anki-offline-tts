@@ -369,17 +369,19 @@ class Preview(QDialog):
         if dialog.exec():
             source_paths = dialog.selectedFiles()
 
-            for path in source_paths:
-                try:
+            try:
+                for path in source_paths:
                     filename = os.path.basename(path)
                     target_file = os.path.join(user_files, filename)
 
                     shutil.copyfile(path, target_file)
                     print(f"Added: {filename}")
-                except FileNotFoundError as e:
-                    print(e)
-                finally:
-                    self._setup_voice_combo()
+            except FileNotFoundError as e:
+                print(e)
+            except shutil.SameFileError as e:
+                print(f"Source and destination are the same file: {e}")
+            finally:
+                self._setup_voice_combo()
 
     def _remove_voices(self):
         dialog = QFileDialog(self)
@@ -394,17 +396,15 @@ class Preview(QDialog):
         if dialog.exec():
             file_paths = dialog.selectedFiles()
 
-            if file_paths:
-                try:
-                    for path in file_paths:
-                        if os.path.exists(path):
-                            os.remove(path)
-                            print(f"Removed: {os.path.basename(path)}")
-                except Exception as e:
-                    print(f"Error deleting file: {e}")
-                finally:
-                    # update values in combobox
-                    self._setup_voice_combo()
+            try:
+                for path in file_paths:
+                    os.remove(path)
+                    print(f"Removed: {os.path.basename(path)}")
+            except Exception as e:
+                print(f"Error deleting file: {e}")
+            finally:
+                # update values in combobox
+                self._setup_voice_combo()
 
     def _configure_slider(
         self,
