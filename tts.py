@@ -4,7 +4,7 @@ import sys
 import os
 
 from chatterbox.tts import ChatterboxTTS
-# from chatterbox.mtl_tts import ChatterboxMultilingualTTS
+from chatterbox.mtl_tts import ChatterboxMultilingualTTS
 
 languages = {
     "Arabic": "ar",
@@ -53,19 +53,30 @@ def main():
         language = sys.argv[7]
         voice = sys.argv[8]
 
-        # model = ChatterboxMultilingualTTS.from_local(ckpt_dir=model_path, device=device)
-        model = ChatterboxTTS.from_local(ckpt_dir=model_path, device=device)
+        options = {
+            "exaggeration": float(exaggeration),
+            "temperature": float(temperature),
+            "cfg_weight": float(cfg_weight),
+        }
+
+        if voice != "Default":
+            options["audio_prompt_path"] = os.path.join(
+                os.path.dirname(__file__), "user_files", f"{voice}"
+            )
+
+        if language == "English":
+            model = ChatterboxTTS.from_local(ckpt_dir=model_path, device=device)
+            print("\nUsing the original model")
+        else:
+            print("\nUsing the multilingual model")
+            model = ChatterboxMultilingualTTS.from_local(
+                ckpt_dir=model_path, device=device
+            )
+            options["language_id"] = languages.get(language)
+
         audio = model.generate(
             text,
-            exaggeration=float(exaggeration),
-            temperature=float(temperature),
-            cfg_weight=float(cfg_weight),
-            audio_prompt_path=os.path.join(
-                os.path.dirname(__file__),
-                "user_files",
-                f"{voice}",
-            ),
-            # language_id=language_dict.get(language),
+            **options,
         )
 
         ta.save(file, audio, model.sr)

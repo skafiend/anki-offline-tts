@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>841</width>
-    <height>575</height>
+    <width>810</width>
+    <height>558</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -93,7 +93,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -243,36 +243,49 @@
        <widget class="QGroupBox" name="gb_fallback">
         <property name="geometry">
          <rect>
-          <x>20</x>
+          <x>30</x>
           <y>20</y>
-          <width>771</width>
-          <height>91</height>
+          <width>631</width>
+          <height>101</height>
          </rect>
         </property>
         <property name="title">
-         <string>Fallback preset</string>
+         <string>Presets</string>
         </property>
         <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
-           <x>10</x>
-           <y>30</y>
-           <width>751</width>
-           <height>52</height>
+           <x>13</x>
+           <y>32</y>
+           <width>614</width>
+           <height>54</height>
           </rect>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_5">
+           <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
              <widget class="QLabel" name="lb_source">
               <property name="text">
-               <string>Source field:</string>
+               <string>Source:</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="le_source"/>
+             <widget class="QLineEdit" name="le_source">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>150</width>
+                <height>0</height>
+               </size>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -281,7 +294,7 @@
             <item>
              <widget class="QLabel" name="lb_dest">
               <property name="text">
-               <string>Destination field:</string>
+               <string>Destination:</string>
               </property>
              </widget>
             </item>
@@ -290,23 +303,11 @@
               <property name="enabled">
                <bool>true</bool>
               </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_6">
-            <item>
-             <widget class="QLabel" name="lb_lang">
-              <property name="text">
-               <string>Language:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="cb_lang">
-              <property name="enabled">
-               <bool>false</bool>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
               <property name="minimumSize">
                <size>
@@ -314,11 +315,6 @@
                 <height>0</height>
                </size>
               </property>
-              <item>
-               <property name="text">
-                <string>English</string>
-               </property>
-              </item>
              </widget>
             </item>
            </layout>
@@ -333,9 +329,33 @@
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="cb_voice">
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QComboBox" name="cb_voice"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QLabel" name="lb_lang">
+              <property name="text">
+               <string>Language:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="cb_lang">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
               <property name="minimumSize">
                <size>
@@ -343,9 +363,128 @@
                 <height>0</height>
                </size>
               </property>
+              <property name="maximumSize">
+               <size>
+                <width>10</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="maxVisibleItems">
+               <number>10</number>
+              </property>
               <item>
                <property name="text">
-                <string>Default</string>
+                <string>English</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Danish</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Greek</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Finnish</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>French</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Hebrew</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Hindi</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Italian</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Japanese</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Spanish</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Polish</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Chinese</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>German</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Turkish</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Swahili</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Swedish</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Russian</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Portuguese</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Norwegian</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Arabic</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Korean</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Dutch</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Malay</string>
                </property>
               </item>
              </widget>

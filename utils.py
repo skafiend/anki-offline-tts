@@ -206,7 +206,7 @@ def generate_audio_batch(
         # ??? add append logic if dst = src
         note[cfg.fallback_dst] = f"[sound:{hash_name}]"
         # ???
-        # note.add_tag("chatterbox-ready")
+        # note.add_tag("chatterbox-test")
         updated = mw.col.update_note(note)
         print(f"\nUpdated:\nnote_id: {note_id}\n{updated}")
 
