@@ -153,11 +153,10 @@ class Preview(QDialog):
         # otherwise it will constantly rewrite the cfg.value
         if self.voices_list == []:
             self.ui.cb_voice.addItems(["Default"])
-            self._set_combobox(self.ui.cb_voice, "Default")
+            self.ui.cb_voice.setCurrentText("Default")
         else:
             self.ui.cb_voice.addItems(self.voices_list)
             self.ui.cb_voice.setCurrentText(cfg.fallback_voice)
-            self._set_combobox(self.ui.cb_voice, cfg.fallback_voice)
             print("Fallback voice", cfg.fallback_voice)
 
         self.ui.cb_voice.currentTextChanged.connect(
@@ -202,7 +201,7 @@ class Preview(QDialog):
 
         # ROCm. HSA_OVERRIDE
         if sys.platform == "linux":
-            self._toggle_hsa_settings(True)
+            self._hsa_visibility(True)
             self.ui.le_set_hsa.setText(cfg.hsa_version)
             # 0 - number permitted, but not required
             # 9 - number required
@@ -212,10 +211,36 @@ class Preview(QDialog):
             qconnect(self.ui.ck_set_hsa.clicked, self._change_hsa_status)
         else:
             # Windows or OSx don't have full ROCm support as far as I know
-            self._toggle_hsa_settings(False)
+            self._hsa_visibility(False)
             self.ui.hor_layout_hsa.setEnabled(False)
 
-    ############################## Dialog methods ##############################
+    ############################## Dialog ##############################
+
+    def closeEvent(self, event: Event):
+        if self.is_running:
+            reply = QMessageBox.question(
+                self,
+                "Operation in Progress",
+                "Audio generation is still running. Do you want to interrupt it and close?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,
+            )
+
+            if reply == QMessageBox.StandardButton.Yes:
+                print("Interrupting operation...")
+                self._on_cancel()
+                # events are accepted by default, unless it's stated otherwise
+                # so even if we don't call event.accept() explicitly
+                # the dialog will be closed
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.accept()
+
+    # This method triggers when we press Esc
+    def reject(self):
+        self.close()  # This part triggers closeEvent
 
     def _set_fallback(self, widget: QLineEdit, attr_name: str):
         text = widget.text()
@@ -333,7 +358,7 @@ class Preview(QDialog):
         self.ui.tbl_audio_gen.selectRow(self.tracking)
         self.ui.prg_audio_preview.setValue(self.tracking)
 
-    ############################## Settings methods ##############################
+    ############################## Settings ##############################
 
     def _open_settings(self):
         if self.settings_visible:
@@ -347,49 +372,9 @@ class Preview(QDialog):
             self.ui.splitter.setSizes([300, 1])
             self.settings_visible = True
 
-    @staticmethod
-    def _set_combobox(combobox: QComboBox, value: str):
-        """
-        Sets the combobox to a specific text value if it exists, otherwise defaults to the first item.
+    ######### Chatterbox ################################################
 
-        :param combobox: The QComboBox widget to update.
-        :param value: The string value to search for in the list.
-        """
-        index = combobox.findText(value)
-
-        print(f"value: {value}, index: {index}")
-
-        if index >= 0:
-            combobox.setCurrentIndex(index)
-        else:
-            combobox.setCurrentIndex(0)
-
-    @staticmethod
-    def _get_voices() -> list[str]:
-        """
-        Scans user_files for *.mp3, *.ogg and *.wav files.
-
-        :return: Names of discovered audio files.
-        """
-        path = os.path.join(os.path.dirname(__file__), "user_files")
-        voices = []
-        with os.scandir(path) as it:
-            for entry in it:
-                if (
-                    not entry.name.startswith(".")
-                    and entry.is_file()
-                    and entry.name.lower().endswith((".mp3", ".ogg", ".wav"))
-                ):
-                    voices.append(entry.name)
-        return voices
-
-    def _toggle_hsa_settings(self, state: bool):
-        self.ui.hor_layout_hsa.setEnabled(state)
-        self.ui.ck_set_hsa.setVisible(state)
-        self.ui.le_set_hsa.setVisible(state)
-        self.ui.lb_set_hsa.setVisible(state)
-
-    # spinboxes already have converted float numbers, so it's easier to use them
+    # spinboxes is converted into float numbers, so it's easier to use them
     def _update_exaggeration(self):
         cfg.exaggeration = round(self.ui.sb_emotion.value(), 2)
 
@@ -422,42 +407,28 @@ class Preview(QDialog):
         slider.valueChanged.connect(update_spin)
         spinbox.valueChanged.connect(update_slider)
 
-    def _change_hsa_status(self):
-        if self.ui.ck_set_hsa.isChecked():
-            print("HSA support enabled")
-            cfg.hsa_enabled = True
-        else:
-            print("HSA support disabled")
-            cfg.hsa_enabled = False
+    ######### Presets ################################################
 
-    def _set_hsa_version(self):
-        version = self.ui.le_set_hsa.text()
-        print(f"Saving a HSA variable: {version}")
-        cfg.hsa_version = version
-        self.ui.le_set_hsa.clearFocus()
+    @staticmethod
+    def _get_voices() -> list[str]:
+        """
+        Scans user_files for *.mp3, *.ogg and *.wav files.
 
-    def _select_model(self):
-        model_path = QFileDialog.getExistingDirectory(self)
-        if model_path != "":
-            print("Model path: ", model_path)
-            self.ui.le_set_model.setText(model_path)
-            cfg.model_path = model_path
-        else:
-            print("Nothing is selected.")
-        pass
+        :return: Names of discovered audio files.
+        """
+        path = os.path.join(os.path.dirname(__file__), "user_files")
+        voices = []
+        with os.scandir(path) as it:
+            for entry in it:
+                if (
+                    not entry.name.startswith(".")
+                    and entry.is_file()
+                    and entry.name.lower().endswith((".mp3", ".ogg", ".wav"))
+                ):
+                    voices.append(entry.name)
+        return voices
 
-    def _select_virt_env(self):
-
-        # QFileDialog returns a tuple:
-        # tts_python: ('<path>', 'All Files (*)')
-        virt_env = QFileDialog.getOpenFileName(self)
-
-        if virt_env != ("", ""):
-            print("Path to python executable: ", virt_env)
-            self.ui.le_set_virt_env.setText(virt_env[0])
-            cfg.virt_env = virt_env[0]
-        else:
-            print("Nothing is selected.")
+    ######### Text Processing ################################################
 
     def _regex_add(self):
         new_row_idx = self.regex_model.rowCount()
@@ -493,31 +464,50 @@ class Preview(QDialog):
         self.regex_model.reset_to_defaults()
         self.regex_model.layoutChanged.emit()
 
-    def closeEvent(self, event: Event):
-        if self.is_running:
-            reply = QMessageBox.question(
-                self,
-                "Operation in Progress",
-                "Audio generation is still running. Do you want to interrupt it and close?",
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                QMessageBox.StandardButton.No,
-            )
+    ######### Virtual Environment ################################################
 
-            if reply == QMessageBox.StandardButton.Yes:
-                print("Interrupting operation...")
-                self._on_cancel()
-                # events are accepted by default, unless it's stated otherwise
-                # so even if we don't call event.accept() explicitly
-                # the dialog will be closed
-                event.accept()
-            else:
-                event.ignore()
+    def _select_model(self):
+        model_path = QFileDialog.getExistingDirectory(self)
+        if model_path != "":
+            print("Model path: ", model_path)
+            self.ui.le_set_model.setText(model_path)
+            cfg.model_path = model_path
         else:
-            event.accept()
+            print("Nothing is selected.")
+        pass
 
-    # This method triggers when we press Esc
-    def reject(self):
-        self.close()  # This part triggers closeEvent
+    def _select_virt_env(self):
+
+        # QFileDialog returns a tuple:
+        # tts_python: ('<path>', 'All Files (*)')
+        virt_env = QFileDialog.getOpenFileName(self)
+
+        if virt_env != ("", ""):
+            print("Path to python executable: ", virt_env)
+            self.ui.le_set_virt_env.setText(virt_env[0])
+            cfg.virt_env = virt_env[0]
+        else:
+            print("Nothing is selected.")
+
+    def _hsa_visibility(self, state: bool):
+        self.ui.hor_layout_hsa.setEnabled(state)
+        self.ui.ck_set_hsa.setVisible(state)
+        self.ui.le_set_hsa.setVisible(state)
+        self.ui.lb_set_hsa.setVisible(state)
+
+    def _change_hsa_status(self):
+        if self.ui.ck_set_hsa.isChecked():
+            print("HSA support enabled")
+            cfg.hsa_enabled = True
+        else:
+            print("HSA support disabled")
+            cfg.hsa_enabled = False
+
+    def _set_hsa_version(self):
+        version = self.ui.le_set_hsa.text()
+        print(f"Saving a HSA variable: {version}")
+        cfg.hsa_version = version
+        self.ui.le_set_hsa.clearFocus()
 
 
 def open_generate_dlg(browser: Browser):
