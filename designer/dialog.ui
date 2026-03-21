@@ -243,9 +243,9 @@
        <widget class="QGroupBox" name="gb_fallback">
         <property name="geometry">
          <rect>
-          <x>30</x>
-          <y>20</y>
-          <width>631</width>
+          <x>20</x>
+          <y>10</y>
+          <width>741</width>
           <height>101</height>
          </rect>
         </property>
@@ -255,9 +255,9 @@
         <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
-           <x>13</x>
-           <y>32</y>
-           <width>614</width>
+           <x>14</x>
+           <y>33</y>
+           <width>711</width>
            <height>54</height>
           </rect>
          </property>
@@ -493,6 +493,64 @@
           </item>
          </layout>
         </widget>
+       </widget>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>120</y>
+          <width>741</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Add preset</string>
+           </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_2">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Remove preset</string>
+           </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_add_voice">
+           <property name="text">
+            <string>Add voices</string>
+           </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_remove_voice">
+           <property name="text">
+            <string>Remove voices</string>
+           </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </widget>
       <widget class="QWidget" name="tb_regex">

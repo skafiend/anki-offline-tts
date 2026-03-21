@@ -20,6 +20,7 @@ from .designer import dialog
 from .utils import generate_audio_batch
 from .models import ModelAudioTbl, ModelRegexTbl
 
+import shutil
 
 import os
 
@@ -30,8 +31,7 @@ from aqt.operations import QueryOp
 import sys
 
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "designer"))
-sys.path.append(os.path.dirname(__file__))
+user_files = os.path.join(os.path.dirname(__file__), "user_files")
 
 
 class Preview(QDialog):
@@ -44,8 +44,6 @@ class Preview(QDialog):
 
         self.ui = dialog.Ui_Dialog()
         self.ui.setupUi(self)
-
-        self.voices_list = self._get_voices()
 
         ## Flags
         # True when a task is running in the subprocess
@@ -91,6 +89,9 @@ class Preview(QDialog):
         self.ui.splitter.setSizes([1, 0])
 
         ######## Chatterbox ##############################
+
+        self.ui.btn_add_voice.clicked.connect(self._add_voices)
+        self.ui.btn_remove_voice.clicked.connect(self._remove_voices)
 
         # Exaggeration: 0.25 - 2.0
         self._configure_slider(
@@ -139,15 +140,7 @@ class Preview(QDialog):
             lambda: self._set_lineedit(self.ui.le_dest, "fallback_dst")
         )
 
-        # We need to repopulate the combobox before declaring the currentTextChanged signal
-        # otherwise it will constantly rewrite the cfg.value
-        if self.voices_list == []:
-            self.ui.cb_voice.addItems(["Default"])
-            self.ui.cb_voice.setCurrentText("Default")
-        else:
-            self.ui.cb_voice.addItems(self.voices_list)
-            self.ui.cb_voice.setCurrentText(cfg.fallback_voice)
-            print("Fallback voice", cfg.fallback_voice)
+        self._setup_voice_combo()
 
         self.ui.cb_voice.currentTextChanged.connect(
             lambda text: setattr(cfg, "fallback_voice", text)
@@ -363,6 +356,56 @@ class Preview(QDialog):
             self.settings_visible = True
 
     ######### Chatterbox ################################################
+
+    def _add_voices(self):
+        dialog = QFileDialog(self)
+        dialog.setWindowTitle("Add new voices")
+        dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
+        dialog.setNameFilter("Audio (*.mp3 *.wav *.ogg)")
+
+        # Change the "Open" button text to "Add"
+        dialog.setLabelText(QFileDialog.DialogLabel.Accept, "Add")
+
+        if dialog.exec():
+            source_paths = dialog.selectedFiles()
+
+            for path in source_paths:
+                try:
+                    filename = os.path.basename(path)
+                    target_file = os.path.join(user_files, filename)
+
+                    shutil.copyfile(path, target_file)
+                    print(f"Added: {filename}")
+                except FileNotFoundError as e:
+                    print(e)
+                finally:
+                    self._setup_voice_combo()
+
+    def _remove_voices(self):
+        dialog = QFileDialog(self)
+        dialog.setWindowTitle("Delete voices")
+        dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
+        dialog.setDirectory(user_files)
+        dialog.setNameFilter("Audio (*.mp3 *.wav *.ogg)")
+
+        # Change the "Open" button text to "Add"
+        dialog.setLabelText(QFileDialog.DialogLabel.Accept, "Delete")
+
+        if dialog.exec():
+            file_paths = dialog.selectedFiles()
+
+            if file_paths:
+                try:
+                    for path in file_paths:
+                        if os.path.exists(path):
+                            os.remove(path)
+                            print(f"Removed: {os.path.basename(path)}")
+                except Exception as e:
+                    print(f"Error deleting file: {e}")
+                finally:
+                    # update values in combobox
+                    self._setup_voice_combo()
+
     def _configure_slider(
         self,
         spinbox: QDoubleSpinBox,
@@ -430,15 +473,29 @@ class Preview(QDialog):
         spinbox.valueChanged.connect(update_slider)
 
     ######### Presets ################################################
+    def _setup_voice_combo(self):
+        # Disable signals to avoid triggering this
+        # self.ui.cb_voice.currentTextChanged.connect
+        self.ui.cb_voice.blockSignals(True)
+        voices_list = self._get_voices()
+        # Start with Default, then add other voices if they exist
+        items = ["Default"] + (voices_list if voices_list else [])
+
+        self.ui.cb_voice.clear()
+        self.ui.cb_voice.addItems(items)
+        self.ui.cb_voice.blockSignals(False)
+
+        # Set selection: use fallback if list isn't empty, otherwise Default
+        selection = cfg.fallback_voice if voices_list else "Default"
+        self.ui.cb_voice.setCurrentText(selection)
 
     @staticmethod
     def _get_voices() -> list[str]:
         """
         Scans user_files for *.mp3, *.ogg and *.wav files.
-
         :return: Names of discovered audio files.
         """
-        path = os.path.join(os.path.dirname(__file__), "user_files")
+        path = user_files
         voices = []
         with os.scandir(path) as it:
             for entry in it:
