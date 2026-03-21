@@ -128,7 +128,7 @@ class Preview(QDialog):
 
         ######## Presets ##############################
 
-        ### Fallback preset
+        # Fallback preset
         self.ui.le_source.setText(cfg.fallback_src)
         self.ui.le_dest.setText(cfg.fallback_dst)
 
@@ -151,16 +151,14 @@ class Preview(QDialog):
         )
         self.ui.cb_lang.setCurrentText(cfg.fallback_lang)
 
-        print(f"\n{type(self).__name__} children: ", len(parent.findChildren(Preview)))
-
         ######## Text Processing ##############################
 
         # the table view will call the data() method of the model
         self.ui.tbl_regex.setModel(self.regex_model)
+
         self.ui.tbl_regex.resizeColumnsToContents()
         self.ui.tbl_regex.horizontalHeader().setStretchLastSection(True)
 
-        # we can trigger the update just by getting the table focus
         self.regex_model.dataChanged.connect(
             lambda: self.preview_model.refresh_data(self.note_ids)
         )
@@ -196,6 +194,9 @@ class Preview(QDialog):
             # Windows or OSx don't have full ROCm support as far as I know
             self._hsa_visibility(False)
             self.ui.hor_layout_hsa.setEnabled(False)
+
+        # How many children check
+        print(f"\n{type(self).__name__} children: ", len(parent.findChildren(Preview)))
 
     ############################## Dialog ##############################
 
@@ -447,10 +448,10 @@ class Preview(QDialog):
             lambda: setattr(cfg, parameter, round(spinbox.value(), 2))
         )
 
-        self._sync_slider_to_spinbox(slider, spinbox)
+        self._link_slider_to_spinbox(slider, spinbox)
 
     @staticmethod
-    def _sync_slider_to_spinbox(
+    def _link_slider_to_spinbox(
         slider: QSlider, spinbox: QDoubleSpinBox, factor: float = 100.0
     ):
         """Links an integer slider and a double spinbox with a scaling factor."""
