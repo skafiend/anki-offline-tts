@@ -76,11 +76,8 @@ class Preview(QDialog):
         self.note_processed.connect(self.move_progress)
 
         # It's either this or using exec() instead or open()
+        # Makes Qt delete this widget when the widget has accepted the close event (see QWidget::closeEvent()).
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-
-        # hook up the model to an instance of the dialog so that
-        # when the dialog dies the model dies with it
-        self.regex_model = ModelRegexTbl(self)
 
         ############################## Settings ##############################
 
@@ -152,6 +149,10 @@ class Preview(QDialog):
         self.ui.cb_lang.setCurrentText(cfg.fallback_lang)
 
         ######## Text Processing ##############################
+
+        # hook up the model to an instance of the dialog so that
+        # when the dialog dies the model dies with it
+        self.regex_model = ModelRegexTbl(self)
 
         # the table view will call the data() method of the model
         self.ui.tbl_regex.setModel(self.regex_model)

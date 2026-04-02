@@ -65,8 +65,8 @@ def main():
             )
 
         if language == "English":
-            model = ChatterboxTTS.from_local(ckpt_dir=model_path, device=device)
             print("\nUsing the original model")
+            model = ChatterboxTTS.from_local(ckpt_dir=model_path, device=device)
         else:
             print("\nUsing the multilingual model")
             model = ChatterboxMultilingualTTS.from_local(

@@ -93,7 +93,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -709,112 +709,6 @@
             </layout>
            </widget>
           </widget>
-         </item>
-        </layout>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>Page</string>
-       </attribute>
-       <widget class="QWidget" name="">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>10</y>
-          <width>751</width>
-          <height>211</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_8">
-         <item>
-          <widget class="QTableWidget" name="tableWidget">
-           <row>
-            <property name="text">
-             <string>0</string>
-            </property>
-           </row>
-           <row>
-            <property name="text">
-             <string>1</string>
-            </property>
-           </row>
-           <column>
-            <property name="text">
-             <string>Source</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Destination</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Voice</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Language</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Mode</string>
-            </property>
-           </column>
-          </widget>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_10">
-           <item>
-            <widget class="QPushButton" name="pushButton_3">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Add </string>
-             </property>
-             <property name="autoDefault">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_4">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Remove </string>
-             </property>
-             <property name="autoDefault">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btn_add_voice_2">
-             <property name="text">
-              <string>Add voices</string>
-             </property>
-             <property name="autoDefault">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btn_remove_voice_2">
-             <property name="text">
-              <string>Remove voices</string>
-             </property>
-             <property name="autoDefault">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
          </item>
         </layout>
        </widget>
