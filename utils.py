@@ -109,15 +109,15 @@ def generate_audio_batch(
         f"\nkeys: {note.keys()}, source: {cfg.fallback_src}, destination: {cfg.fallback_dst}"
     )
 
-    if missing_fields(note, [cfg.fallback_src, cfg.fallback_dst]):
+    text = sanitize_text(note[cfg.fallback_src], cfg.regex_rules)
+    media_path = col.media.dir()
+    temp_file = os.path.join(media_path, "chatterbox.mp3")
+
+    if missing_fields(note, [cfg.fallback_src, cfg.fallback_dst]) or text.strip() == "":
         # Even if we can't process the note, we still emit the signal
         # to move the progress bar
         processed()
         return
-
-    text = sanitize_text(note[cfg.fallback_src], cfg.regex_rules)
-    media_path = col.media.dir()
-    temp_file = os.path.join(media_path, "chatterbox.mp3")
 
     if not os.path.isdir(media_path):
         raise FileNotFoundError(f"Missing Anki media folder at: {media_path}")
