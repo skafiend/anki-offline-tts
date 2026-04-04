@@ -44,6 +44,17 @@ def main():
 
         print(f"\nDevice: {device}\n")
 
+        if torch.cuda.is_available():
+            # This will print "AMD Radeon..." if ROCm is working properly
+            print(f"GPU Name: {torch.cuda.get_device_name(0)}")
+
+            # Try a tiny operation to confirm kernels can actually run
+            try:
+                test_tensor = torch.tensor([1.0]).to("cuda")
+                print("GPU kernel execution: SUCCESS")
+            except Exception as e:
+                print(f"GPU kernel execution: FAILED ({e})")
+
         file = sys.argv[1]
         text = sys.argv[2]
         exaggeration = sys.argv[3]

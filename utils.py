@@ -45,7 +45,7 @@ def sanitize_text(text: str, regex: list[dict[str, str]]) -> str:
 
     for pair in regex:
         try:
-            text = re.sub(pair["Pattern"], pair["Replace"], text)
+            text = re.sub(pair["pattern"], pair["replace"], text)
         except re.error:
             print("\n INVALID REGEX: ", pair)
             continue
@@ -76,48 +76,27 @@ def terminate_process(process, timeout=3):
         print("Process is already finished or doesn't exist.")
 
 
-def missing_fields(note: Note, fields: list[str]) -> list[str] | None:
-    """
-    Identifies which required keys are missing from a note dictionary.
-
-    :param note: The note object or dictionary to inspect for keys.
-    :type note: Note
-    :param fields: A list of field names that must exist in the note.
-    :type fields: list[str]
-    :returns: A list of missing field names if any are missing, otherwise None.
-    :rtype: list[str] or None
-    """
-    missing_fields = [field for field in fields if field not in note.keys()]
-
-    if missing_fields:
-        print(f"WARNING: Missing fields: {missing_fields}")
-        return missing_fields
-    else:
-        return None
+def is_preset_valid(note, preset: dict[str, str]) -> bool:
+    """Checks if source and destination fields exist in the already loaded note."""
+    return preset["source"] in note and preset["destination"] in note
 
 
 def generate_audio_batch(
     col: Collection,
-    note_id: int,
+    note: Note,
     cancel_event: Event,
+    preset: dict[str, str],
     processed: signal.Signals,
 ) -> int:
 
-    note = col.get_note(note_id)
+    source = preset["source"]
+    dest = preset["destination"]
 
-    print(
-        f"\nkeys: {note.keys()}, source: {cfg.fallback_src}, destination: {cfg.fallback_dst}"
-    )
+    print(f"\nkeys: {note.keys()}, source: {source}, destination: {dest}")
 
-    text = sanitize_text(note[cfg.fallback_src], cfg.regex_rules)
+    text = sanitize_text(note[source], cfg.regex_rules)
     media_path = col.media.dir()
     temp_file = os.path.join(media_path, "chatterbox.mp3")
-
-    if missing_fields(note, [cfg.fallback_src, cfg.fallback_dst]) or text.strip() == "":
-        # Even if we can't process the note, we still emit the signal
-        # to move the progress bar
-        processed()
-        return
 
     if not os.path.isdir(media_path):
         raise FileNotFoundError(f"Missing Anki media folder at: {media_path}")
@@ -139,9 +118,10 @@ def generate_audio_batch(
     if is_hsa():
         print(f"HSA_OVERRIDE_GFX_VERSION: {cfg.hsa_version}, Flatpak: {is_flatpak()}")
         current_env["HSA_OVERRIDE_GFX_VERSION"] = cfg.hsa_version
-        current_env["HF_HUB_OFFLINE"] = "1"
     else:
         print("HSA_OVERRIDE_GFX_VERSION is not applied")
+
+    current_env["HF_HUB_OFFLINE"] = "1"
 
     args += [
         f"{cfg.virt_env}",
@@ -152,8 +132,8 @@ def generate_audio_batch(
         f"{cfg.temp}",
         f"{cfg.cfg_weight}",
         f"{cfg.model_path}",
-        f"{cfg.fallback_lang}",
-        f"{cfg.fallback_voice}",
+        f"{preset['language']}",
+        f"{preset['voice']}",
     ]
 
     # Default to 0 (no effect on Unix)
@@ -203,12 +183,9 @@ def generate_audio_batch(
         file_path = os.path.join(media_path, hash_name)
         os.rename(temp_file, file_path)
         print(f"\nHash-generated name: {hash_name}")
-        # ??? add append logic if dst = src
-        note[cfg.fallback_dst] = f"[sound:{hash_name}]"
-        # ???
-        # note.add_tag("chatterbox-test")
+        note[dest] = f"[sound:{hash_name}]"
         updated = mw.col.update_note(note)
-        print(f"\nUpdated:\nnote_id: {note_id}\n{updated}")
+        print(f"\nUpdated:\nNote: {note}\n{updated}")
 
         # Emit signal that the current note is updated
         processed()
@@ -223,6 +200,7 @@ def generate_audio_batch(
     return 0
 
 
+# ??? not used
 def detect_device(python: str):
     args = [
         python,

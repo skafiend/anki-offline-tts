@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>810</width>
-    <height>558</height>
+    <width>848</width>
+    <height>714</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -92,10 +92,13 @@
         <height>30</height>
        </size>
       </property>
-      <property name="currentIndex">
-       <number>4</number>
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
-      <widget class="QWidget" name="tab">
+      <property name="currentIndex">
+       <number>3</number>
+      </property>
+      <widget class="QWidget" name="tb_chatterbox">
        <attribute name="title">
         <string>Chatterbox</string>
        </attribute>
@@ -494,64 +497,58 @@
          </layout>
         </widget>
        </widget>
-       <widget class="QWidget" name="layoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>120</y>
-          <width>741</width>
-          <height>27</height>
-         </rect>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_9">
-         <item>
-          <widget class="QPushButton" name="pushButton">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Add </string>
-           </property>
-           <property name="autoDefault">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_2">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Remove </string>
-           </property>
-           <property name="autoDefault">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_add_voice">
-           <property name="text">
-            <string>Add voices</string>
-           </property>
-           <property name="autoDefault">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_remove_voice">
-           <property name="text">
-            <string>Remove voices</string>
-           </property>
-           <property name="autoDefault">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
+      </widget>
+      <widget class="QWidget" name="tb_presets_test">
+       <property name="accessibleName">
+        <string/>
+       </property>
+       <attribute name="title">
+        <string>Presets</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_8">
+        <item>
+         <widget class="QTableView" name="tbl_presets"/>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_10">
+          <item>
+           <widget class="QPushButton" name="btn_preset_add">
+            <property name="text">
+             <string>Add preset</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_preset_remove">
+            <property name="text">
+             <string>Remove presets</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_voice_add">
+            <property name="text">
+             <string>Add voices</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_voice_remove">
+            <property name="text">
+             <string>Remove voices</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_preset_restore">
+            <property name="text">
+             <string>Restore defaults</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="tb_regex">
        <attribute name="title">
@@ -561,14 +558,14 @@
         <item row="1" column="0">
          <widget class="QPushButton" name="btn_regex_add">
           <property name="text">
-           <string>Add</string>
+           <string>Add new rule</string>
           </property>
          </widget>
         </item>
         <item row="1" column="1">
          <widget class="QPushButton" name="btn_regex_remove">
           <property name="text">
-           <string>Remove</string>
+           <string>Remove rules</string>
           </property>
          </widget>
         </item>
@@ -709,112 +706,6 @@
             </layout>
            </widget>
           </widget>
-         </item>
-        </layout>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>Page</string>
-       </attribute>
-       <widget class="QWidget" name="">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>10</y>
-          <width>751</width>
-          <height>211</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_8">
-         <item>
-          <widget class="QTableWidget" name="tableWidget">
-           <row>
-            <property name="text">
-             <string>0</string>
-            </property>
-           </row>
-           <row>
-            <property name="text">
-             <string>1</string>
-            </property>
-           </row>
-           <column>
-            <property name="text">
-             <string>Source</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Destination</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Voice</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Language</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Mode</string>
-            </property>
-           </column>
-          </widget>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_10">
-           <item>
-            <widget class="QPushButton" name="pushButton_3">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Add </string>
-             </property>
-             <property name="autoDefault">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_4">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Remove </string>
-             </property>
-             <property name="autoDefault">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btn_add_voice_2">
-             <property name="text">
-              <string>Add voices</string>
-             </property>
-             <property name="autoDefault">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btn_remove_voice_2">
-             <property name="text">
-              <string>Remove voices</string>
-             </property>
-             <property name="autoDefault">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
          </item>
         </layout>
        </widget>

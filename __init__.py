@@ -18,7 +18,7 @@ from aqt.sound import mpvManager
 from threading import Event
 from .designer import dialog
 from .utils import generate_audio_batch
-from .models import ModelAudioTbl, ModelRegexTbl
+from .models import DictTableModel, ModelAudioTable
 
 import shutil
 
@@ -58,8 +58,12 @@ class Preview(QDialog):
         self.note_ids = ids
         self.ui.btn_cancel.setEnabled(False)
 
-        self.preview_model = ModelAudioTbl(ids, self)
-        self.ui.tbl_audio_gen.setModel(self.preview_model)
+        self.mdl_preview = ModelAudioTable(
+            self, ids, ["Note ID", "Text Before", "Processed Text", "Status", "Preset"]
+        )
+        self.ui.tbl_audio_gen.setModel(self.mdl_preview)
+        # number of records in preview = number of records to process
+        self.records = self.mdl_preview.rowCount()
 
         self.cancel_event = Event()
         qconnect(self.ui.btn_generate.clicked, self._start_task)
@@ -67,8 +71,9 @@ class Preview(QDialog):
         qconnect(self.ui.btn_settings.clicked, self._open_settings)
 
         self.ui.tbl_audio_gen.horizontalHeader().setStretchLastSection(True)
-        self.ui.tbl_audio_gen.setColumnWidth(1, 200)
-        self.ui.tbl_audio_gen.setColumnWidth(2, 200)
+        self.ui.tbl_audio_gen.setColumnWidth(1, 280)
+        self.ui.tbl_audio_gen.setColumnWidth(2, 280)
+        self.ui.tbl_audio_gen.setColumnHidden(4, True)
 
         # The progress bar
         self._set_up_progress()
@@ -87,8 +92,8 @@ class Preview(QDialog):
 
         ######## Chatterbox ##############################
 
-        self.ui.btn_add_voice.clicked.connect(self._add_voices)
-        self.ui.btn_remove_voice.clicked.connect(self._remove_voices)
+        self.ui.btn_voice_add.clicked.connect(self._add_voices)
+        self.ui.btn_voice_remove.clicked.connect(self._remove_voices)
 
         # Exaggeration: 0.25 - 2.0
         self._configure_slider(
@@ -123,53 +128,36 @@ class Preview(QDialog):
             100.0,
         )
 
-        ######## Presets ##############################
-
-        # Fallback preset
-        self.ui.le_source.setText(cfg.fallback_src)
-        self.ui.le_dest.setText(cfg.fallback_dst)
-
-        self.ui.le_source.editingFinished.connect(
-            lambda: self._set_lineedit(self.ui.le_source, "fallback_src")
-        )
-
-        self.ui.le_dest.editingFinished.connect(
-            lambda: self._set_lineedit(self.ui.le_dest, "fallback_dst")
-        )
-
-        self._setup_voice_combo()
-
-        self.ui.cb_voice.currentTextChanged.connect(
-            lambda text: setattr(cfg, "fallback_voice", text)
-        )
-
-        self.ui.cb_lang.currentTextChanged.connect(
-            lambda text: setattr(cfg, "fallback_lang", text)
-        )
-        self.ui.cb_lang.setCurrentText(cfg.fallback_lang)
-
         ######## Text Processing ##############################
 
         # hook up the model to an instance of the dialog so that
         # when the dialog dies the model dies with it
-        self.regex_model = ModelRegexTbl(self)
+        self.mdl_regex = DictTableModel(
+            self, cfg.regex_rules, ["pattern", "replace", "comment"]
+        )
 
         # the table view will call the data() method of the model
-        self.ui.tbl_regex.setModel(self.regex_model)
+        self.ui.tbl_regex.setModel(self.mdl_regex)
 
         self.ui.tbl_regex.resizeColumnsToContents()
         self.ui.tbl_regex.horizontalHeader().setStretchLastSection(True)
 
-        self.regex_model.dataChanged.connect(
-            lambda: self.preview_model.refresh_data(self.note_ids)
+        self.mdl_regex.dataChanged.connect(
+            lambda: self.mdl_preview.refresh_data(self.note_ids)
         )
-        self.regex_model.layoutChanged.connect(
-            lambda: self.preview_model.refresh_data(self.note_ids)
+        self.mdl_regex.layoutChanged.connect(
+            lambda: self.mdl_preview.refresh_data(self.note_ids)
         )
 
-        qconnect(self.ui.btn_regex_add.clicked, self._regex_add)
-        qconnect(self.ui.btn_regex_remove.clicked, self._regex_remove)
-        qconnect(self.ui.btn_regex_restore.clicked, self._regex_reset)
+        qconnect(
+            self.ui.btn_regex_add.clicked,
+            lambda: self._add_row_to_table(self.mdl_regex, self.ui.tbl_regex),
+        )
+        qconnect(
+            self.ui.btn_regex_remove.clicked,
+            lambda: self._remove_selected_rows(self.mdl_regex, self.ui.tbl_regex),
+        )
+        qconnect(self.ui.btn_regex_restore.clicked, self._regex_restore)
 
         ######## Virtual Environment ##############################
 
@@ -198,6 +186,70 @@ class Preview(QDialog):
 
         # How many children check
         print(f"\n{type(self).__name__} children: ", len(parent.findChildren(Preview)))
+
+        ######## Presets ##############################
+        self.mdl_presets = DictTableModel(
+            self, cfg.presets, ["source", "destination", "voice", "language", "mode"]
+        )
+        self.ui.tbl_presets.setModel(self.mdl_presets)
+        self.ui.tbl_presets.resizeColumnsToContents()
+        self.ui.tbl_presets.horizontalHeader().setStretchLastSection(True)
+
+        self.ui.tbl_presets.setColumnWidth(0, 150)
+        self.ui.tbl_presets.setColumnWidth(1, 150)
+        self.ui.tbl_presets.setColumnWidth(2, 150)
+        self.ui.tbl_presets.setColumnWidth(3, 100)
+
+        self.mdl_presets.dataChanged.connect(
+            lambda: self.mdl_preview.refresh_data(self.note_ids)
+        )
+        self.mdl_presets.layoutChanged.connect(
+            lambda: self.mdl_preview.refresh_data(self.note_ids)
+        )
+
+        qconnect(
+            self.ui.btn_preset_add.clicked,
+            lambda: self._add_row_to_table(self.mdl_presets, self.ui.tbl_presets),
+        )
+        qconnect(
+            self.ui.btn_preset_remove.clicked,
+            lambda: self._remove_selected_rows(self.mdl_presets, self.ui.tbl_presets),
+        )
+        qconnect(self.ui.btn_preset_restore.clicked, self._preset_restore)
+
+    def _setup_voice_combo(self):
+        # Disable signals to avoid triggering this
+        # self.ui.cb_voice.currentTextChanged.connect
+        self.ui.cb_voice.blockSignals(True)
+        voices_list = self._get_voices()
+        # Start with Default, then add other voices if they exist
+        items = ["Default"] + (voices_list if voices_list else [])
+
+        self.ui.cb_voice.clear()
+        self.ui.cb_voice.addItems(items)
+        self.ui.cb_voice.blockSignals(False)
+
+        # Set selection: use fallback if list isn't empty, otherwise Default
+        selection = cfg.fallback_voice if voices_list else "Default"
+        self.ui.cb_voice.setCurrentText(selection)
+
+    @staticmethod
+    def _get_voices() -> list[str]:
+        """
+        Scans user_files for *.mp3, *.ogg and *.wav files.
+        :return: Names of discovered audio files.
+        """
+        path = user_files
+        voices = []
+        with os.scandir(path) as it:
+            for entry in it:
+                if (
+                    not entry.name.startswith(".")
+                    and entry.is_file()
+                    and entry.name.lower().endswith((".mp3", ".ogg", ".wav"))
+                ):
+                    voices.append(entry.name)
+        return voices
 
     ############################## Dialog ##############################
 
@@ -231,7 +283,7 @@ class Preview(QDialog):
         text = widget.text()
         print(f"Saving {widget}: {text}")
         setattr(cfg, attr_name, text)
-        self.preview_model.refresh_data(self.note_ids)
+        self.mdl_preview.refresh_data(self.note_ids)
         # Remove focus after pressing enter
         widget.clearFocus()
 
@@ -254,28 +306,44 @@ class Preview(QDialog):
         self._generate_audio()
 
     def _generate_audio(self):
+        # Get the 'Model Indexes' (the pointers to the cells)
+        id_idx = self.mdl_preview.index(self.tracking, 0)
+        print("id_idx", id_idx)
+        preset_idx = self.mdl_preview.index(self.tracking, 4)
 
-        note_id = self.note_ids[self.tracking]
-
-        print(
-            f"\n✓ Processing {note_id}: {self.tracking + 1} out of {len(self.note_ids)}"
+        # Extract the actual Data from those cells
+        note_id = int(self.mdl_preview.data(id_idx, Qt.ItemDataRole.DisplayRole))
+        note_preset = int(
+            self.mdl_preview.data(preset_idx, Qt.ItemDataRole.DisplayRole)
         )
+        note = mw.col.get_note(note_id)
 
-        generate = QueryOp(
-            parent=self,
-            op=lambda col: generate_audio_batch(
-                col,
-                self.note_ids[self.tracking],
-                self.cancel_event,
-                processed=self.note_processed.emit,
-            ),
-            success=self._generate_success,
-        )
+        if note_preset >= 0:
+            preset = cfg.presets[note_preset]
 
-        generate.failure(self._generate_failure).run_in_background()
+            print(
+                f"\n✓ Processing {note_id}: {self.tracking + 1} out of {self.records}"
+            )
+            generate = QueryOp(
+                parent=self,
+                op=lambda col: generate_audio_batch(
+                    col,
+                    note,
+                    self.cancel_event,
+                    preset,
+                    processed=self.note_processed.emit,
+                ),
+                success=self._generate_success,
+            )
+
+            generate.failure(self._generate_failure).run_in_background()
+        else:
+            print(f"\n✓ {note_id}: No valid preset index found. Skipping...")
+            self.note_processed.emit()
+            self._generate_next()
 
     def _generate_next(self):
-        if self.tracking < len(self.note_ids):
+        if self.tracking < self.records:
             self.is_running = True
             self.ui.tbl_audio_gen.selectRow(self.tracking)
             self._generate_audio()
@@ -288,9 +356,6 @@ class Preview(QDialog):
     def _generate_success(self, return_code: int) -> None:
         if return_code == 0:
             print("\n✓ Audio generation successful.")
-            self._generate_next()
-        elif return_code is None:
-            print("\n⚠ Skipping: Note contains missing or invalid fields.")
             self._generate_next()
         else:
             self.is_finished = False
@@ -312,7 +377,7 @@ class Preview(QDialog):
 
     def _set_up_progress(self):
         self.ui.prg_audio_preview.setMinimum(0)
-        self.ui.prg_audio_preview.setMaximum(len(self.note_ids))
+        self.ui.prg_audio_preview.setMaximum(self.records)
 
         self.ui.prg_audio_preview.setValue(0)
 
@@ -329,14 +394,14 @@ class Preview(QDialog):
     def move_progress(self):
         row = self.tracking
 
-        if row >= self.preview_model.rowCount():
+        if row >= self.records:
             return
 
-        index = self.preview_model.index(row, 3)
-        current_status = self.preview_model.data(index, Qt.ItemDataRole.DisplayRole)
+        index = self.mdl_preview.index(row, 3)
+        current_status = self.mdl_preview.data(index, Qt.ItemDataRole.DisplayRole)
         new_status = "Done" if current_status in ("OK", "Done") else "Skipped"
 
-        self.preview_model.setData(index, new_status, Qt.ItemDataRole.EditRole)
+        self.mdl_preview.setData(index, new_status, Qt.ItemDataRole.EditRole)
 
         self.tracking += 1
 
@@ -474,76 +539,40 @@ class Preview(QDialog):
         slider.valueChanged.connect(update_spin)
         spinbox.valueChanged.connect(update_slider)
 
-    ######### Presets ################################################
-    def _setup_voice_combo(self):
-        # Disable signals to avoid triggering this
-        # self.ui.cb_voice.currentTextChanged.connect
-        self.ui.cb_voice.blockSignals(True)
-        voices_list = self._get_voices()
-        # Start with Default, then add other voices if they exist
-        items = ["Default"] + (voices_list if voices_list else [])
+    ######### Edit tables ################################################
+    def _add_row_to_table(self, model, table_view):
+        new_row_idx = model.rowCount()
 
-        self.ui.cb_voice.clear()
-        self.ui.cb_voice.addItems(items)
-        self.ui.cb_voice.blockSignals(False)
+        if model.insertRow(new_row_idx):
+            index = model.index(new_row_idx, 0)
+            table_view.setCurrentIndex(index)
+            table_view.edit(index)
 
-        # Set selection: use fallback if list isn't empty, otherwise Default
-        selection = cfg.fallback_voice if voices_list else "Default"
-        self.ui.cb_voice.setCurrentText(selection)
-
-    @staticmethod
-    def _get_voices() -> list[str]:
-        """
-        Scans user_files for *.mp3, *.ogg and *.wav files.
-        :return: Names of discovered audio files.
-        """
-        path = user_files
-        voices = []
-        with os.scandir(path) as it:
-            for entry in it:
-                if (
-                    not entry.name.startswith(".")
-                    and entry.is_file()
-                    and entry.name.lower().endswith((".mp3", ".ogg", ".wav"))
-                ):
-                    voices.append(entry.name)
-        return voices
-
-    ######### Text Processing ################################################
-
-    def _regex_add(self):
-        new_row_idx = self.regex_model.rowCount()
-        print("\nNumber of rows: ", new_row_idx)
-        if self.regex_model.insertRow(new_row_idx):
-            index = self.regex_model.index(new_row_idx, 0)
-            print("index: ", index)
-
-            # moves the "selection highlight" (the blue box or dotted outline).
-            self.ui.tbl_regex.setCurrentIndex(index)
-            self.ui.tbl_regex.edit(index)
-
-    def _regex_remove(self):
+    def _remove_selected_rows(self, model, table_view):
         # contains indexes for every selected cell therefore in a 2x3 table
         # selection = 6 even though selected rows = 2
-        selection = self.ui.tbl_regex.selectedIndexes()
+        selection = table_view.selectedIndexes()
 
         # selection = 6, but rows only 2 => if we filter out all the duplicates,
         # we get the indexes of selected rows. set comprehension does exactly that
         rows = {i.row() for i in selection}
 
-        print("\n_regex_remove.clicked")
-
         # every time we remove an item from a list, its indexes shift.
         # we will get "list assignment index out of range" errors
         # unless we remove elements from the bottom first
         for i in sorted(rows, reverse=True):
-            print(f"\nselected: {len(rows)}, row: {i}")
-            self.regex_model.removeRow(i)
-        self.regex_model.layoutChanged.emit()
+            model.removeRow(i)
 
-    def _regex_reset(self):
-        self.regex_model.reset_to_defaults()
-        self.regex_model.layoutChanged.emit()
+        # Notify the view that the layout has changed
+        model.layoutChanged.emit()
+
+    def _regex_restore(self):
+        self.mdl_regex.reset_to_defaults("regex_rules")
+        self.mdl_regex.layoutChanged.emit()
+
+    def _preset_restore(self):
+        self.mdl_presets.reset_to_defaults("presets")
+        self.mdl_presets.layoutChanged.emit()
 
     ######### Virtual Environment ################################################
 

@@ -3,15 +3,16 @@
     {"virt_env": "/media/stuff/Development/virt_env/rocm/bin/python", "hsa": { "ver": "11.0.0", "enabled": false}},
     "model": {"exaggeration": 0.5, "cfg_weight": 0.5, "temp": 0.8, "path": "/media/stuff/Development/models/chatterbox"},
   "presets": 
-    {"fallback": {"source": "Example", "destination": "Audio", "language": "English", "voice": "en.mp3"}},
-  "regex_rules": [{"Pattern": "&nbsp;", "Replace": " ", "Comment": "Replace non-breaking spaces with ' '"},
-    {"Pattern": "\\[.*?\\]", "Replace": "", "Comment": "Ignore text in []."},
-    {"Pattern": "<\\/?span.*?>", "Replace": "", "Comment": "Remove <span> tags"},
-    {"Pattern": "<br\\s*/?>", "Replace": " ", "Comment": "Replace <br> tags with ' '"},
-    {"Pattern": "(\\(|\\))", "Replace": "", "Comment": "Remove (). Chatterbox puts emphasis on text inside ()"},
-    {"Pattern": "{{[^{}:]*::([^{}:]*)(::[^{}:]*)?}}", "Replace": "\\1", "Comment": "Remove cloze brackets {{c1::...}}"},
-    {"Pattern": "<div.*?>(.*?)<\\/div>", "Replace": "\\1", "Comment": "Remove complete <div> blocks"},
-    {"Pattern": "<\\/?div>", "Replace": "", "Comment": "Remove single <div> blocks"}
+    [{"source": "cloze_1", "destination": "audio_1", "language": "English", "voice": "en.mp3", "mode": "overwrite"},
+    {"source": "cloze_2", "destination": "audio_2", "language": "English", "voice": "en.mp3", "mode": "append"}],
+  "regex_rules": [{"pattern": "&nbsp;", "replace": " ", "comment": "Replace non-breaking spaces with ' '"},
+    {"pattern": "\\[.*?\\]", "replace": "", "comment": "Ignore text in []."},
+    {"pattern": "<\\/?span.*?>", "replace": "", "comment": "Remove <span> tags"},
+    {"pattern": "<br\\s*/?>", "replace": " ", "comment": "Replace <br> tags with ' '"},
+    {"pattern": "(\\(|\\))", "replace": "", "comment": "Remove (). Chatterbox puts emphasis on text inside ()"},
+    {"pattern": "{{[^{}:]*::([^{}:]*)(::[^{}:]*)?}}", "replace": "\\1", "comment": "Remove cloze brackets {{c1::...}}"},
+    {"pattern": "<div.*?>(.*?)<\\/div>", "replace": "\\1", "comment": "Remove complete <div> blocks"},
+    {"pattern": "<\\/?div>", "replace": "", "comment": "Remove single <div> blocks"}
   ]
 }
 
