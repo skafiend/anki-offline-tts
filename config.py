@@ -1,11 +1,4 @@
-import os
-import sys
-import platform
-
 from aqt import mw
-
-script_to_run = "tts.py"
-# script_to_run = "tts_turbo.py"
 
 
 class Parameter:
@@ -51,6 +44,7 @@ class ConfigManager:
     virt_env = Parameter(["settings", "virt_env"])
     hsa_version = Parameter(["settings", "hsa", "ver"])
     hsa_enabled = Parameter(["settings", "hsa", "enabled"])
+    preserve_audio = Parameter(["preserve_audio"])
     regex_rules = Parameter(["regex_rules"])
     presets = Parameter(["presets"])
     exaggeration = Parameter(["model", "exaggeration"])

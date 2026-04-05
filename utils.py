@@ -11,7 +11,8 @@ import time
 import hashlib
 
 from threading import Event
-from .config import cfg, script_to_run
+from .config import cfg
+from .constants import script_to_run
 
 
 def sanitize_text(text: str, regex: list[dict[str, str]]) -> str:
@@ -76,9 +77,18 @@ def terminate_process(process, timeout=3):
         print("Process is already finished or doesn't exist.")
 
 
+def has_audio(field_content):
+    pattern = r"\[sound:.*?\]"
+    return bool(re.search(pattern, field_content))
+
+
 def is_preset_valid(note, preset: dict[str, str]) -> bool:
     """Checks if source and destination fields exist in the already loaded note."""
     return preset["source"] in note and preset["destination"] in note
+
+
+def remove_audio_tags(note: Note, field: str):
+    return re.sub("\[sound:[^]]*?\]", "", note[field])
 
 
 def generate_audio_batch(
@@ -183,7 +193,17 @@ def generate_audio_batch(
         file_path = os.path.join(media_path, hash_name)
         os.rename(temp_file, file_path)
         print(f"\nHash-generated name: {hash_name}")
-        note[dest] = f"[sound:{hash_name}]"
+
+        new_audio_ref = f"[sound:{hash_name}]"
+        if preset["mode"] == "append":
+            updated_data = remove_audio_tags(note, dest) + " " + new_audio_ref
+            print("updated data:", updated_data)
+        else:
+            # Overwrite mode
+            updated_data = new_audio_ref
+
+        note[dest] = updated_data
+
         updated = mw.col.update_note(note)
         print(f"\nUpdated:\nNote: {note}\n{updated}")
 

@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>848</width>
-    <height>714</height>
+    <width>900</width>
+    <height>488</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>900</width>
+    <height>400</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -66,16 +72,27 @@
       <property name="title">
        <string/>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="0" column="0">
         <widget class="QTableView" name="tbl_audio_gen"/>
        </item>
-       <item>
-        <widget class="QProgressBar" name="prg_audio_preview">
-         <property name="value">
-          <number>0</number>
-         </property>
-        </widget>
+       <item row="1" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QProgressBar" name="prg_audio_preview">
+           <property name="value">
+            <number>0</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="ck_preserve_audio">
+           <property name="text">
+            <string>Preserve existing audio</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -83,7 +100,7 @@
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>200</height>
+        <height>170</height>
        </size>
       </property>
       <property name="baseSize">
@@ -96,406 +113,209 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tb_chatterbox">
        <attribute name="title">
         <string>Chatterbox</string>
        </attribute>
-       <widget class="QGroupBox" name="groupBox">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>20</y>
-          <width>641</width>
-          <height>211</height>
-         </rect>
-        </property>
-        <property name="title">
-         <string>Model Parameters</string>
-        </property>
-        <widget class="QWidget" name="layoutWidget">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>20</y>
-           <width>611</width>
-           <height>173</height>
-          </rect>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
-           <layout class="QVBoxLayout" name="v_emotion">
-            <item>
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>Emotion intensity (exaggeration):</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
-              <item>
-               <widget class="QSlider" name="sld_emotion">
-                <property name="minimum">
-                 <number>25</number>
-                </property>
-                <property name="maximum">
-                 <number>200</number>
-                </property>
-                <property name="singleStep">
-                 <number>1</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Orientation::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QDoubleSpinBox" name="sb_emotion">
-                <property name="minimum">
-                 <double>0.250000000000000</double>
-                </property>
-                <property name="maximum">
-                 <double>2.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="v_pace">
-            <item>
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>Pace control (cfg_weight):</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout">
-              <item>
-               <widget class="QSlider" name="sld_pace">
-                <property name="maximum">
-                 <number>100</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Orientation::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QDoubleSpinBox" name="sb_pace">
-                <property name="maximum">
-                 <double>1.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="v_temp">
-            <item>
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>Sample randomness (temperature):</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_5">
-              <item>
-               <widget class="QSlider" name="sld_temp">
-                <property name="minimum">
-                 <number>5</number>
-                </property>
-                <property name="maximum">
-                 <number>500</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Orientation::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QDoubleSpinBox" name="sb_temp">
-                <property name="minimum">
-                 <double>0.050000000000000</double>
-                </property>
-                <property name="maximum">
-                 <double>5.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="tb_presets">
-       <attribute name="title">
-        <string>Presets</string>
-       </attribute>
-       <widget class="QGroupBox" name="gb_fallback">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>20</x>
           <y>10</y>
-          <width>741</width>
-          <height>101</height>
+          <width>821</width>
+          <height>75</height>
          </rect>
         </property>
-        <property name="title">
-         <string>Presets</string>
-        </property>
-        <widget class="QWidget" name="layoutWidget">
-         <property name="geometry">
-          <rect>
-           <x>14</x>
-           <y>33</y>
-           <width>711</width>
-           <height>54</height>
-          </rect>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_8">
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_6">
-            <item>
-             <widget class="QLabel" name="lb_source">
-              <property name="text">
-               <string>Source:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="le_source">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>0</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_4">
-            <item>
-             <widget class="QLabel" name="lb_dest">
-              <property name="text">
-               <string>Destination:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="le_dest">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>0</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_7">
-            <item>
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>Voice:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
+         <item>
+          <widget class="QFrame" name="frame">
+           <property name="minimumSize">
+            <size>
+             <width>250</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>250</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Shape::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Shadow::Raised</enum>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="0">
+             <layout class="QVBoxLayout" name="v_emotion">
               <item>
-               <widget class="QComboBox" name="cb_voice"/>
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>exaggeration (emotions):</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_4">
+                <item>
+                 <widget class="QSlider" name="sld_emotion">
+                  <property name="minimum">
+                   <number>25</number>
+                  </property>
+                  <property name="maximum">
+                   <number>200</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>1</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="sb_emotion">
+                  <property name="minimum">
+                   <double>0.250000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>2.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
              </layout>
             </item>
            </layout>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_5">
-            <item>
-             <widget class="QLabel" name="lb_lang">
-              <property name="text">
-               <string>Language:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="cb_lang">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>150</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>10</width>
-                <height>25</height>
-               </size>
-              </property>
-              <property name="maxVisibleItems">
-               <number>10</number>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame_2">
+           <property name="minimumSize">
+            <size>
+             <width>250</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>250</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Shape::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Shadow::Raised</enum>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="0" column="0">
+             <layout class="QVBoxLayout" name="v_pace">
+              <property name="sizeConstraint">
+               <enum>QLayout::SizeConstraint::SetMaximumSize</enum>
               </property>
               <item>
-               <property name="text">
-                <string>English</string>
-               </property>
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string>cfg_weight (pace):</string>
+                </property>
+               </widget>
               </item>
               <item>
-               <property name="text">
-                <string>Danish</string>
-               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <item>
+                 <widget class="QSlider" name="sld_pace">
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="sb_pace">
+                  <property name="maximum">
+                   <double>1.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
-              <item>
-               <property name="text">
-                <string>Greek</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Finnish</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>French</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Hebrew</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Hindi</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Italian</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Japanese</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Spanish</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Polish</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Chinese</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>German</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Turkish</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Swahili</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Swedish</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Russian</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Portuguese</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Norwegian</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Arabic</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Korean</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Dutch</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Malay</string>
-               </property>
-              </item>
-             </widget>
+             </layout>
             </item>
            </layout>
-          </item>
-         </layout>
-        </widget>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame_3">
+           <property name="minimumSize">
+            <size>
+             <width>250</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>250</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Shape::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Shadow::Raised</enum>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="0" column="0">
+             <layout class="QVBoxLayout" name="v_temp">
+              <item>
+               <widget class="QLabel" name="label_4">
+                <property name="text">
+                 <string>temperature (randomness):</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <item>
+                 <widget class="QSlider" name="sld_temp">
+                  <property name="minimum">
+                   <number>5</number>
+                  </property>
+                  <property name="maximum">
+                   <number>500</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="sb_temp">
+                  <property name="minimum">
+                   <double>0.050000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>5.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </widget>
       <widget class="QWidget" name="tb_presets_test">
@@ -527,6 +347,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="btn_voice_add">
+            <property name="toolTip">
+             <string>Audio files will be copied into the addon folder</string>
+            </property>
             <property name="text">
              <string>Add voices</string>
             </property>
@@ -596,7 +419,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>170</y>
+          <y>100</y>
           <width>339</width>
           <height>27</height>
          </rect>
@@ -630,47 +453,11 @@
          <rect>
           <x>10</x>
           <y>11</y>
-          <width>621</width>
-          <height>141</height>
+          <width>831</width>
+          <height>81</height>
          </rect>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <item>
-          <widget class="QGroupBox" name="gb_tts">
-           <property name="title">
-            <string>Python Executable (virtual environment path):</string>
-           </property>
-           <widget class="QWidget" name="layoutWidget">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>30</y>
-              <width>591</width>
-              <height>27</height>
-             </rect>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QLineEdit" name="le_set_virt_env">
-               <property name="baseSize">
-                <size>
-                 <width>0</width>
-                 <height>30</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="btn_set_virt_env">
-               <property name="text">
-                <string>Select</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </widget>
-         </item>
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
          <item>
           <widget class="QGroupBox" name="gb_tts_2">
            <property name="title">
@@ -681,7 +468,7 @@
              <rect>
               <x>10</x>
               <y>30</y>
-              <width>591</width>
+              <width>371</width>
               <height>27</height>
              </rect>
             </property>
@@ -698,6 +485,42 @@
              </item>
              <item>
               <widget class="QPushButton" name="btn_set_model">
+               <property name="text">
+                <string>Select</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="gb_tts">
+           <property name="title">
+            <string>Python Executable:</string>
+           </property>
+           <widget class="QWidget" name="layoutWidget">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>30</y>
+              <width>371</width>
+              <height>27</height>
+             </rect>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <item>
+              <widget class="QLineEdit" name="le_set_virt_env">
+               <property name="baseSize">
+                <size>
+                 <width>0</width>
+                 <height>30</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="btn_set_virt_env">
                <property name="text">
                 <string>Select</string>
                </property>

@@ -1,6 +1,6 @@
 from aqt import QAbstractTableModel, QModelIndex, mw
 from aqt.qt import Qt
-from .utils import is_preset_valid, sanitize_text
+from .utils import is_preset_valid, sanitize_text, has_audio
 
 from .config import cfg
 
@@ -66,6 +66,9 @@ class ModelAudioTable(GenericTable):
             # Find presets where both source and destination fields exist in the note
             valid_presets = [p for p in cfg.presets if is_preset_valid(note, p)]
 
+            # sometimes anki was sure that -99 is the note id
+            # after pressing "generate audio"
+            # didn't manage to reproduce
             if not valid_presets:
                 # No matching presets found for this specific note
                 self._data.append(
@@ -74,26 +77,36 @@ class ModelAudioTable(GenericTable):
                         f"Fields: {note.keys()}",
                         "No presets associated with the note",
                         "ERROR!",
-                        "-1",
+                        "-99",
                     ]
                 )
                 continue
 
             for index, preset in enumerate(valid_presets, 0):
-                source_val = note[preset["source"]]
+                source = note[preset["source"]]
+                dest = note[preset["destination"]]
                 # If source is empty, we don't really need to generate anything
-                if source_val:
-                    cln_after = sanitize_text(source_val, cfg.regex_rules)
-                    self._data.append([str(nid), source_val, cln_after, "OK", index])
+                if source:
+                    if not (has_audio(dest) and cfg.preserve_audio):
+                        cln_after = sanitize_text(source, cfg.regex_rules)
+                        self._data.append(
+                            [
+                                str(nid),
+                                source,
+                                cln_after,
+                                f"{preset['source']}:{preset['destination']}",
+                                index,
+                            ]
+                        )
                 else:
                     # CASE: Preset exists, but the specific field in this note is empty
                     self._data.append(
                         [
                             str(nid),
-                            f"[{preset['source']}] is empty",
-                            "Nothing to process",
-                            "ERROR!",
-                            "-1",
+                            f"Empty: [{preset['source']}]",
+                            "No data to process",
+                            "WARNING!",
+                            "-77",
                         ]
                     )
         self.endResetModel()

@@ -1,30 +1,39 @@
 from aqt import (
-    QAbstractItemModel,
+    QAbstractItemView,
+    QAbstractTableModel,
     QComboBox,
     QDoubleSpinBox,
     QFileDialog,
     QLineEdit,
     QSlider,
-    QSpinBox,
-    QStringListModel,
     mw,
     qconnect,
     gui_hooks,
 )
-from aqt.qt import Qt, QDialog, QAction, QMessageBox, pyqtSlot, pyqtSignal, sip
+from aqt.qt import (
+    Qt,
+    QDialog,
+    QAction,
+    QMessageBox,
+    pyqtSlot,
+    pyqtSignal,
+    sip,
+    QStyledItemDelegate,
+)
 from aqt.browser.browser import Browser
 from aqt.utils import showCritical
-from aqt.sound import mpvManager
 from threading import Event
 from .designer import dialog
 from .utils import generate_audio_batch
 from .models import DictTableModel, ModelAudioTable
 
+
 import shutil
 
 import os
 
-from .config import ConfigManager, cfg
+from .config import cfg
+from .constants import languages
 
 from aqt.operations import QueryOp
 
@@ -32,6 +41,30 @@ import sys
 
 
 user_files = os.path.join(os.path.dirname(__file__), "user_files")
+
+
+class ComboDelegate(QStyledItemDelegate):
+    def __init__(self, parent=None, items=None):
+        super().__init__(parent)
+        self.items = items or []
+
+    def createEditor(self, parent, option, index):
+        editor = QComboBox(parent)
+        editor.addItems(self.items)
+        editor.activated.connect(self.on_activated)
+        return editor
+
+    def setEditorData(self, editor, index):
+        value = index.data(Qt.ItemDataRole.DisplayRole)
+        editor.setCurrentText(str(value))
+
+    def setModelData(self, editor, model, index):
+        model.setData(index, editor.currentText(), Qt.ItemDataRole.EditRole)
+
+    def on_activated(self):
+        editor = self.sender()
+        self.commitData.emit(editor)
+        self.closeEditor.emit(editor)
 
 
 class Preview(QDialog):
@@ -55,6 +88,13 @@ class Preview(QDialog):
 
         ############################## Audio preview ##############################
 
+        # preserve audio checkbox
+        self.ui.ck_preserve_audio.setChecked(cfg.preserve_audio)
+        qconnect(self.ui.ck_preserve_audio.toggled, self._preserve_audio)
+        self.ui.ck_preserve_audio.toggled.connect(
+            lambda: self.mdl_preview.refresh_data(self.note_ids)
+        )
+
         self.note_ids = ids
         self.ui.btn_cancel.setEnabled(False)
 
@@ -75,8 +115,19 @@ class Preview(QDialog):
         self.ui.tbl_audio_gen.setColumnWidth(2, 280)
         self.ui.tbl_audio_gen.setColumnHidden(4, True)
 
+        self.modes = ["append", "overwrite"]
+        mode = ComboDelegate(self.ui.tbl_presets, self.modes)
+        self.ui.tbl_presets.setItemDelegateForColumn(4, mode)
+        self.languages = [lang for lang in languages]
+        lang = ComboDelegate(self.ui.tbl_presets, self.languages)
+        self.ui.tbl_presets.setItemDelegateForColumn(3, lang)
+        voices = self._get_voices()
+        self.voices = ["default"] + (voices if voices else [])
+        voices = ComboDelegate(self.ui.tbl_presets, self.voices)
+        self.ui.tbl_presets.setItemDelegateForColumn(2, voices)
+
         # The progress bar
-        self._set_up_progress()
+        self._reset_progress_bar()
         # Connect the signal that we pass to our background function to the slot
         self.note_processed.connect(self.move_progress)
 
@@ -86,7 +137,7 @@ class Preview(QDialog):
 
         ############################## Settings ##############################
 
-        self.ui.tabSettings.setMinimumHeight(280)
+        self.ui.tabSettings.setMinimumHeight(170)
         # "hiding" the settings part
         self.ui.splitter.setSizes([1, 0])
 
@@ -157,7 +208,10 @@ class Preview(QDialog):
             self.ui.btn_regex_remove.clicked,
             lambda: self._remove_selected_rows(self.mdl_regex, self.ui.tbl_regex),
         )
-        qconnect(self.ui.btn_regex_restore.clicked, self._regex_restore)
+        qconnect(
+            self.ui.btn_regex_restore.clicked,
+            lambda: self._restore_defaults(self.mdl_regex, "regex_rules"),
+        )
 
         ######## Virtual Environment ##############################
 
@@ -209,29 +263,16 @@ class Preview(QDialog):
 
         qconnect(
             self.ui.btn_preset_add.clicked,
-            lambda: self._add_row_to_table(self.mdl_presets, self.ui.tbl_presets),
+            lambda: self._add_new_preset(self.mdl_presets, self.ui.tbl_presets),
         )
         qconnect(
             self.ui.btn_preset_remove.clicked,
             lambda: self._remove_selected_rows(self.mdl_presets, self.ui.tbl_presets),
         )
-        qconnect(self.ui.btn_preset_restore.clicked, self._preset_restore)
-
-    def _setup_voice_combo(self):
-        # Disable signals to avoid triggering this
-        # self.ui.cb_voice.currentTextChanged.connect
-        self.ui.cb_voice.blockSignals(True)
-        voices_list = self._get_voices()
-        # Start with Default, then add other voices if they exist
-        items = ["Default"] + (voices_list if voices_list else [])
-
-        self.ui.cb_voice.clear()
-        self.ui.cb_voice.addItems(items)
-        self.ui.cb_voice.blockSignals(False)
-
-        # Set selection: use fallback if list isn't empty, otherwise Default
-        selection = cfg.fallback_voice if voices_list else "Default"
-        self.ui.cb_voice.setCurrentText(selection)
+        qconnect(
+            self.ui.btn_preset_restore.clicked,
+            lambda: self._restore_defaults(self.mdl_presets, "presets"),
+        )
 
     @staticmethod
     def _get_voices() -> list[str]:
@@ -293,13 +334,14 @@ class Preview(QDialog):
             self.ui.btn_generate.setEnabled(not busy)
             self.ui.btn_cancel.setEnabled(busy)
             self.ui.tabSettings.setDisabled(busy)
+            self.ui.ck_preserve_audio.setDisabled(busy)
 
     def _start_task(self):
         # If we want to regenerate notes again
         # the progress should be reset
         if self.is_finished:
             self.tracking = 0
-            self._set_up_progress()
+            self._reset_progress_bar()
 
         self._toggle_ui_busy(True)
         self.cancel_event.clear()
@@ -308,7 +350,6 @@ class Preview(QDialog):
     def _generate_audio(self):
         # Get the 'Model Indexes' (the pointers to the cells)
         id_idx = self.mdl_preview.index(self.tracking, 0)
-        print("id_idx", id_idx)
         preset_idx = self.mdl_preview.index(self.tracking, 4)
 
         # Extract the actual Data from those cells
@@ -375,7 +416,7 @@ class Preview(QDialog):
         self.ui.tabSettings.setDisabled(False)
         self.cancel_event.set()
 
-    def _set_up_progress(self):
+    def _reset_progress_bar(self):
         self.ui.prg_audio_preview.setMinimum(0)
         self.ui.prg_audio_preview.setMaximum(self.records)
 
@@ -397,12 +438,6 @@ class Preview(QDialog):
         if row >= self.records:
             return
 
-        index = self.mdl_preview.index(row, 3)
-        current_status = self.mdl_preview.data(index, Qt.ItemDataRole.DisplayRole)
-        new_status = "Done" if current_status in ("OK", "Done") else "Skipped"
-
-        self.mdl_preview.setData(index, new_status, Qt.ItemDataRole.EditRole)
-
         self.tracking += 1
 
         self.ui.tbl_audio_gen.selectRow(self.tracking)
@@ -421,6 +456,15 @@ class Preview(QDialog):
             # how much space does it take, so we can pass just 1 to make it fully visible
             self.ui.splitter.setSizes([300, 1])
             self.settings_visible = True
+
+    def _preserve_audio(self):
+        if self.ui.ck_preserve_audio.isChecked():
+            cfg.preserve_audio = True
+            # We must reset the progress in case the preview changes
+            self._reset_progress_bar()
+        else:
+            cfg.preserve_audio = False
+            self._reset_progress_bar()
 
     ######### Chatterbox ################################################
 
@@ -540,7 +584,21 @@ class Preview(QDialog):
         spinbox.valueChanged.connect(update_slider)
 
     ######### Edit tables ################################################
-    def _add_row_to_table(self, model, table_view):
+    def _add_new_preset(
+        self, model: QAbstractTableModel, table_view: QAbstractItemView
+    ):
+        # the index will be right after we add an empty row
+        row_idx = model.rowCount()
+        self._add_row_to_table(model, table_view)
+
+        model.setData(model.index(row_idx, 2), self.voices[0], Qt.ItemDataRole.EditRole)
+        model.setData(
+            model.index(row_idx, 3), self.languages[4], Qt.ItemDataRole.EditRole
+        )
+        model.setData(model.index(row_idx, 4), self.modes[1], Qt.ItemDataRole.EditRole)
+
+    @staticmethod
+    def _add_row_to_table(model: QAbstractTableModel, table_view: QAbstractItemView):
         new_row_idx = model.rowCount()
 
         if model.insertRow(new_row_idx):
@@ -548,7 +606,8 @@ class Preview(QDialog):
             table_view.setCurrentIndex(index)
             table_view.edit(index)
 
-    def _remove_selected_rows(self, model, table_view):
+    @staticmethod
+    def _remove_selected_rows(model, table_view):
         # contains indexes for every selected cell therefore in a 2x3 table
         # selection = 6 even though selected rows = 2
         selection = table_view.selectedIndexes()
@@ -566,13 +625,10 @@ class Preview(QDialog):
         # Notify the view that the layout has changed
         model.layoutChanged.emit()
 
-    def _regex_restore(self):
-        self.mdl_regex.reset_to_defaults("regex_rules")
-        self.mdl_regex.layoutChanged.emit()
-
-    def _preset_restore(self):
-        self.mdl_presets.reset_to_defaults("presets")
-        self.mdl_presets.layoutChanged.emit()
+    @staticmethod
+    def _restore_defaults(model: QAbstractTableModel, parameter: str):
+        model.reset_to_defaults(parameter)
+        model.layoutChanged.emit()
 
     ######### Virtual Environment ################################################
 

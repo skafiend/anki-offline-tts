@@ -6,31 +6,13 @@ import os
 from chatterbox.tts import ChatterboxTTS
 from chatterbox.mtl_tts import ChatterboxMultilingualTTS
 
-languages = {
-    "Arabic": "ar",
-    "Danish": "da",
-    "German": "de",
-    "Greek": "el",
-    "English": "en",
-    "Spanish": "es",
-    "Finnish": "fi",
-    "French": "fr",
-    "Hebrew": "he",
-    "Hindi": "hi",
-    "Italian": "it",
-    "Japanese": "ja",
-    "Korean": "ko",
-    "Malay": "ms",
-    "Dutch": "nl",
-    "Norwegian": "no",
-    "Polish": "pl",
-    "Portuguese": "pt",
-    "Russian": "ru",
-    "Swedish": "sv",
-    "Swahili": "sw",
-    "Turkish": "tr",
-    "Chinese": "zh",
-}
+
+dir_path = os.path.dirname(os.path.abspath(__file__))
+
+if dir_path not in sys.path:
+    sys.path.append(dir_path)
+
+from constants import languages
 
 
 def main():
@@ -43,17 +25,6 @@ def main():
             device = "cpu"
 
         print(f"\nDevice: {device}\n")
-
-        if torch.cuda.is_available():
-            # This will print "AMD Radeon..." if ROCm is working properly
-            print(f"GPU Name: {torch.cuda.get_device_name(0)}")
-
-            # Try a tiny operation to confirm kernels can actually run
-            try:
-                test_tensor = torch.tensor([1.0]).to("cuda")
-                print("GPU kernel execution: SUCCESS")
-            except Exception as e:
-                print(f"GPU kernel execution: FAILED ({e})")
 
         file = sys.argv[1]
         text = sys.argv[2]
@@ -70,7 +41,7 @@ def main():
             "cfg_weight": float(cfg_weight),
         }
 
-        if voice != "Default":
+        if voice != "default":
             options["audio_prompt_path"] = os.path.join(
                 os.path.dirname(__file__), "user_files", f"{voice}"
             )
