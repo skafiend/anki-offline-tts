@@ -88,7 +88,7 @@ def is_preset_valid(note, preset: dict[str, str]) -> bool:
 
 
 def remove_audio_tags(note: Note, field: str):
-    return re.sub("\[sound:[^]]*?\]", "", note[field])
+    return re.sub("\\[sound:[^]]*?\\]", "", note[field])
 
 
 def generate_audio_batch(
