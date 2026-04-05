@@ -98,18 +98,23 @@ class ModelAudioTable(GenericTable):
                                 index,
                             ]
                         )
-            # else:
-            #     # CASE: Preset exists, but the specific field in this note is empty
-            #     self._data.append(
-            #         [
-            #             str(nid),
-            #             f"Empty: [{preset['source']}]",
-            #             "No data to process",
-            #             "WARNING!",
-            #             "-77",
-            #         ]
-            #     )
+            else:
+                # CASE: Preset exists, but the specific field in this note is empty
+                self._data.append(
+                    [
+                        str(nid),
+                        f"Empty: [{preset['source']}]",
+                        "No data to process",
+                        "WARNING!",
+                        "-77",
+                    ]
+                )
         self.endResetModel()
+
+    def sort(self, column, order=Qt.SortOrder.AscendingOrder):
+        self.layoutAboutToBeChanged.emit()
+        self._data.sort(key=lambda x: str(x[column]), reverse=True)
+        self.layoutChanged.emit()
 
 
 class DictTableModel(GenericTable):

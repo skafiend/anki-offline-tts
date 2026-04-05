@@ -91,9 +91,6 @@ class Preview(QDialog):
         # preserve audio checkbox
         self.ui.ck_preserve_audio.setChecked(cfg.preserve_audio)
         qconnect(self.ui.ck_preserve_audio.toggled, self._preserve_audio)
-        self.ui.ck_preserve_audio.toggled.connect(
-            lambda: self.mdl_preview.refresh_data(self.note_ids)
-        )
 
         self.note_ids = ids
         self.ui.btn_cancel.setEnabled(False)
@@ -102,8 +99,7 @@ class Preview(QDialog):
             self, ids, ["Note ID", "Text Before", "Processed Text", "Status", "Preset"]
         )
         self.ui.tbl_audio_gen.setModel(self.mdl_preview)
-        # number of records in preview = number of records to process
-        self.records = self.mdl_preview.rowCount()
+        self.mdl_preview.sort(4)
 
         self.cancel_event = Event()
         qconnect(self.ui.btn_generate.clicked, self._start_task)
@@ -113,6 +109,7 @@ class Preview(QDialog):
         self.ui.tbl_audio_gen.horizontalHeader().setStretchLastSection(True)
         self.ui.tbl_audio_gen.setColumnWidth(1, 280)
         self.ui.tbl_audio_gen.setColumnWidth(2, 280)
+        # ???
         self.ui.tbl_audio_gen.setColumnHidden(4, True)
 
         self.modes = ["append", "overwrite"]
@@ -273,6 +270,10 @@ class Preview(QDialog):
             lambda: self._restore_defaults(self.mdl_presets, "presets"),
         )
 
+    @property
+    def record_count(self):
+        return self.mdl_preview.rowCount()
+
     @staticmethod
     def _get_voices() -> list[str]:
         """
@@ -362,7 +363,7 @@ class Preview(QDialog):
             preset = cfg.presets[note_preset]
 
             print(
-                f"\n✓ Processing {note_id}: {self.tracking + 1} out of {self.records}"
+                f"\n✓ Processing {note_id}: {self.tracking + 1} out of {self.record_count}"
             )
             generate = QueryOp(
                 parent=self,
@@ -383,7 +384,7 @@ class Preview(QDialog):
             self._generate_next()
 
     def _generate_next(self):
-        if self.tracking < self.records:
+        if self.tracking < self.record_count:
             self.is_running = True
             self.ui.tbl_audio_gen.selectRow(self.tracking)
             self._generate_audio()
@@ -417,7 +418,7 @@ class Preview(QDialog):
 
     def _reset_progress_bar(self):
         self.ui.prg_audio_preview.setMinimum(0)
-        self.ui.prg_audio_preview.setMaximum(self.records)
+        self.ui.prg_audio_preview.setMaximum(self.record_count)
 
         self.ui.prg_audio_preview.setValue(0)
 
@@ -434,7 +435,7 @@ class Preview(QDialog):
     def move_progress(self):
         row = self.tracking
 
-        if row >= self.records:
+        if row >= self.record_count:
             return
 
         self.tracking += 1
@@ -459,11 +460,12 @@ class Preview(QDialog):
     def _preserve_audio(self):
         if self.ui.ck_preserve_audio.isChecked():
             cfg.preserve_audio = True
-            # We must reset the progress in case the preview changes
-            self._reset_progress_bar()
         else:
             cfg.preserve_audio = False
-            self._reset_progress_bar()
+
+        self.mdl_preview.refresh_data(self.note_ids)
+        self.mdl_preview.sort(4)
+        self._reset_progress_bar()
 
     ######### Chatterbox ################################################
     def _update_voices(self):
