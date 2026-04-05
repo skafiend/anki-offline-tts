@@ -98,17 +98,17 @@ class ModelAudioTable(GenericTable):
                                 index,
                             ]
                         )
-                else:
-                    # CASE: Preset exists, but the specific field in this note is empty
-                    self._data.append(
-                        [
-                            str(nid),
-                            f"Empty: [{preset['source']}]",
-                            "No data to process",
-                            "WARNING!",
-                            "-77",
-                        ]
-                    )
+            # else:
+            #     # CASE: Preset exists, but the specific field in this note is empty
+            #     self._data.append(
+            #         [
+            #             str(nid),
+            #             f"Empty: [{preset['source']}]",
+            #             "No data to process",
+            #             "WARNING!",
+            #             "-77",
+            #         ]
+            #     )
         self.endResetModel()
 
 
