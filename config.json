@@ -5,9 +5,9 @@
     "preserve_audio": true,
   "presets": 
     [{"source": "cloze_1", "destination": "audio_1", "language": "English", "voice": "en.mp3", "mode": "overwrite"},
-    {"source": "cloze_2", "destination": "audio_2", "language": "English", "voice": "en.mp3", "mode": "overwrite"}],
-    {"source": "cloze_3", "destination": "audio_3", "language": "English", "voice": "en.mp3", "mode": "overwrite"}],
-    {"source": "cloze_4", "destination": "audio_4", "language": "English", "voice": "en.mp3", "mode": "overwrite"}],
+    {"source": "cloze_2", "destination": "audio_2", "language": "English", "voice": "en.mp3", "mode": "overwrite"},
+    {"source": "cloze_3", "destination": "audio_3", "language": "English", "voice": "en.mp3", "mode": "overwrite"},
+    {"source": "cloze_4", "destination": "audio_4", "language": "English", "voice": "en.mp3", "mode": "overwrite"},
     {"source": "cloze_5", "destination": "audio_5", "language": "English", "voice": "en.mp3", "mode": "overwrite"}],
   "regex_rules": [{"pattern": "&nbsp;", "replace": " ", "comment": "Replace non-breaking spaces with ' '"},
     {"pattern": "\\[.*?\\]", "replace": "", "comment": "Ignore text in []."},
