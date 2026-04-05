@@ -121,10 +121,6 @@ class Preview(QDialog):
         self.languages = [lang for lang in languages]
         lang = ComboDelegate(self.ui.tbl_presets, self.languages)
         self.ui.tbl_presets.setItemDelegateForColumn(3, lang)
-        voices = self._get_voices()
-        self.voices = ["default"] + (voices if voices else [])
-        voices = ComboDelegate(self.ui.tbl_presets, self.voices)
-        self.ui.tbl_presets.setItemDelegateForColumn(2, voices)
 
         # The progress bar
         self._reset_progress_bar()
@@ -242,6 +238,9 @@ class Preview(QDialog):
         print(f"\n{type(self).__name__} children: ", len(parent.findChildren(Preview)))
 
         ######## Presets ##############################
+        # initialize Presets -> Voice ComboDelegate
+        self._update_voices()
+
         self.mdl_presets = DictTableModel(
             self, cfg.presets, ["source", "destination", "voice", "language", "mode"]
         )
@@ -467,6 +466,11 @@ class Preview(QDialog):
             self._reset_progress_bar()
 
     ######### Chatterbox ################################################
+    def _update_voices(self):
+        voices = self._get_voices()
+        self.voices = ["default"] + (voices if voices else [])
+        voices = ComboDelegate(self.ui.tbl_presets, self.voices)
+        self.ui.tbl_presets.setItemDelegateForColumn(2, voices)
 
     def _add_voices(self):
         dialog = QFileDialog(self)
@@ -492,7 +496,7 @@ class Preview(QDialog):
             except shutil.SameFileError as e:
                 print(f"Source and destination are the same file: {e}")
             finally:
-                self._setup_voice_combo()
+                self._update_voices()
 
     def _remove_voices(self):
         dialog = QFileDialog(self)
@@ -514,8 +518,7 @@ class Preview(QDialog):
             except Exception as e:
                 print(f"Error deleting file: {e}")
             finally:
-                # update values in combobox
-                self._setup_voice_combo()
+                self._update_voices()
 
     def _configure_slider(
         self,
