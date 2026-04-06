@@ -64,16 +64,14 @@ class ModelAudioTable(GenericTable):
         for nid in ids:
             note = mw.col.get_note(nid)
             # Find presets where both source and destination fields exist in the note
-            # I actually want to have a proper index of the preset as well. The index
-            # coincides with the presets table
+            # the index (i) coincides with the presets table
             valid_presets = [
                 (i, p) for i, p in enumerate(cfg.presets, 0) if is_preset_valid(note, p)
             ]
+
             print("valid_presets:", valid_presets)
 
-            # sometimes anki was sure that -99 is the note id
-            # after pressing "generate audio"
-            # didn't manage to reproduce
+            # sometimes anki was sure that -99 is the note_id after pressing "generate audio"
             if not valid_presets:
                 # No matching presets found for this specific note
                 self._data.append(
@@ -87,20 +85,22 @@ class ModelAudioTable(GenericTable):
                 )
                 continue
 
-            for index, preset in enumerate(valid_presets, 0):
-                source = note[preset[1]["source"]]
-                dest = note[preset[1]["destination"]]
+            for preset_idx, preset in valid_presets:
+                src_name = preset["source"]
+                dst_name = preset["destination"]
+                src_content = note[src_name]
+                dst_content = note[dst_name]
                 # If source is empty, we don't really need to generate anything
-                if source:
-                    if not (has_audio(dest) and cfg.preserve_audio):
-                        cln_after = sanitize_text(source, cfg.regex_rules)
+                if src_content:
+                    if not (has_audio(dst_content) and cfg.preserve_audio):
+                        cln_after = sanitize_text(src_content, cfg.regex_rules)
                         self._data.append(
                             [
                                 str(nid),
-                                source,
+                                src_content,
                                 cln_after,
-                                f"{preset[1]['source']}:{preset[1]['destination']}",
-                                preset[0],
+                                f"{src_name}:{dst_name}",
+                                preset_idx,
                             ]
                         )
                 else:
@@ -108,7 +108,7 @@ class ModelAudioTable(GenericTable):
                     self._data.append(
                         [
                             str(nid),
-                            f"Empty: [{preset[1]['source']}]",
+                            f"Empty: [{src_name}]",
                             "No data to process",
                             "WARNING!",
                             "-77",
