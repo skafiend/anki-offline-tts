@@ -85,7 +85,7 @@ class ModelAudioTable(GenericTable):
                 )
                 continue
 
-            for preset_idx, preset in valid_presets:
+            for index, preset in valid_presets:
                 src_name = preset["source"]
                 dst_name = preset["destination"]
                 src_content = note[src_name]
@@ -93,14 +93,14 @@ class ModelAudioTable(GenericTable):
                 # If source is empty, we don't really need to generate anything
                 if src_content:
                     if not (has_audio(dst_content) and cfg.preserve_audio):
-                        cln_after = sanitize_text(src_content, cfg.regex_rules)
+                        result = sanitize_text(src_content, cfg.regex_rules)
                         self._data.append(
                             [
                                 str(nid),
                                 src_content,
-                                cln_after,
+                                result,
                                 f"{src_name}:{dst_name}",
-                                preset_idx,
+                                index,
                             ]
                         )
                 else:
