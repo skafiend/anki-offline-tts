@@ -64,7 +64,12 @@ class ModelAudioTable(GenericTable):
         for nid in ids:
             note = mw.col.get_note(nid)
             # Find presets where both source and destination fields exist in the note
-            valid_presets = [p for p in cfg.presets if is_preset_valid(note, p)]
+            # I actually want to have a proper index of the preset as well. The index
+            # coincides with the presets table
+            valid_presets = [
+                (i, p) for i, p in enumerate(cfg.presets, 0) if is_preset_valid(note, p)
+            ]
+            print("valid_presets:", valid_presets)
 
             # sometimes anki was sure that -99 is the note id
             # after pressing "generate audio"
@@ -83,8 +88,8 @@ class ModelAudioTable(GenericTable):
                 continue
 
             for index, preset in enumerate(valid_presets, 0):
-                source = note[preset["source"]]
-                dest = note[preset["destination"]]
+                source = note[preset[1]["source"]]
+                dest = note[preset[1]["destination"]]
                 # If source is empty, we don't really need to generate anything
                 if source:
                     if not (has_audio(dest) and cfg.preserve_audio):
@@ -94,8 +99,8 @@ class ModelAudioTable(GenericTable):
                                 str(nid),
                                 source,
                                 cln_after,
-                                f"{preset['source']}:{preset['destination']}",
-                                index,
+                                f"{preset[1]['source']}:{preset[1]['destination']}",
+                                preset[0],
                             ]
                         )
                 else:
@@ -103,7 +108,7 @@ class ModelAudioTable(GenericTable):
                     self._data.append(
                         [
                             str(nid),
-                            f"Empty: [{preset['source']}]",
+                            f"Empty: [{preset[1]['source']}]",
                             "No data to process",
                             "WARNING!",
                             "-77",
