@@ -109,12 +109,8 @@ class Preview(QDialog):
         self.ui.tbl_audio_gen.horizontalHeader().setStretchLastSection(True)
         self.ui.tbl_audio_gen.setColumnWidth(1, 280)
         self.ui.tbl_audio_gen.setColumnWidth(2, 280)
-        # ???
         self.ui.tbl_audio_gen.setColumnHidden(4, True)
 
-        self.modes = ["append", "overwrite"]
-        mode = ComboDelegate(self.ui.tbl_presets, self.modes)
-        self.ui.tbl_presets.setItemDelegateForColumn(4, mode)
         self.languages = [lang for lang in languages]
         lang = ComboDelegate(self.ui.tbl_presets, self.languages)
         self.ui.tbl_presets.setItemDelegateForColumn(3, lang)
@@ -239,7 +235,7 @@ class Preview(QDialog):
         self._update_voices()
 
         self.mdl_presets = DictTableModel(
-            self, cfg.presets, ["source", "destination", "voice", "language", "mode"]
+            self, cfg.presets, ["source", "destination", "voice", "language"]
         )
         self.ui.tbl_presets.setModel(self.mdl_presets)
         self.ui.tbl_presets.resizeColumnsToContents()
@@ -600,7 +596,6 @@ class Preview(QDialog):
         model.setData(
             model.index(row_idx, 3), self.languages[4], Qt.ItemDataRole.EditRole
         )
-        model.setData(model.index(row_idx, 4), self.modes[1], Qt.ItemDataRole.EditRole)
 
     @staticmethod
     def _add_row_to_table(model: QAbstractTableModel, table_view: QAbstractItemView):

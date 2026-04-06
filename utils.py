@@ -195,12 +195,8 @@ def generate_audio_batch(
         print(f"\nHash-generated name: {hash_name}")
 
         new_audio_ref = f"[sound:{hash_name}]"
-        if preset["mode"] == "append":
-            updated_data = remove_audio_tags(note, dest) + " " + new_audio_ref
-            print("updated data:", updated_data)
-        else:
-            # Overwrite mode
-            updated_data = new_audio_ref
+        updated_data = remove_audio_tags(note, dest) + " " + new_audio_ref
+        print("updated data:", updated_data)
 
         note[dest] = updated_data
 
