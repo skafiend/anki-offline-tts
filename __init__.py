@@ -6,6 +6,7 @@ from aqt import (
     QFileDialog,
     QLineEdit,
     QSlider,
+    QTimer,
     mw,
     qconnect,
     gui_hooks,
@@ -377,7 +378,7 @@ class Preview(QDialog):
         else:
             print(f"\n✓ {note_id}: No valid preset index found. Skipping...")
             self.note_processed.emit()
-            self._generate_next()
+            QTimer.setSingleShot(0, self._generate_next)
 
     def _generate_next(self):
         if self.tracking < self.record_count:
@@ -393,7 +394,7 @@ class Preview(QDialog):
     def _generate_success(self, return_code: int) -> None:
         if return_code == 0:
             print("\n✓ Audio generation successful.")
-            self._generate_next()
+            QTimer.setSingleShot(0, self._generate_next)
         else:
             self.is_finished = False
             self.is_running = False
