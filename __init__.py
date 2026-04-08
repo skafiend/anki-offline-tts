@@ -378,7 +378,7 @@ class Preview(QDialog):
         else:
             print(f"\n✓ {note_id}: No valid preset index found. Skipping...")
             self.note_processed.emit()
-            QTimer.setSingleShot(0, self._generate_next)
+            QTimer.singleShot(0, self._generate_next)
 
     def _generate_next(self):
         if self.tracking < self.record_count:
@@ -394,7 +394,7 @@ class Preview(QDialog):
     def _generate_success(self, return_code: int) -> None:
         if return_code == 0:
             print("\n✓ Audio generation successful.")
-            QTimer.setSingleShot(0, self._generate_next)
+            QTimer.singleShot(0, self._generate_next)
         else:
             self.is_finished = False
             self.is_running = False
