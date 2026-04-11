@@ -97,7 +97,9 @@ class Preview(QDialog):
         self.ui.btn_cancel.setEnabled(False)
 
         self.mdl_preview = ModelAudioTable(
-            self, ids, ["Note ID", "Text Before", "Processed Text", "Status", "Preset"]
+            self,
+            ids,
+            ["Note ID", "Text Before", "Processed Text", "Status", "Preset"],
         )
         self.ui.tbl_audio_gen.setModel(self.mdl_preview)
         self.mdl_preview.sort(4)
@@ -110,7 +112,7 @@ class Preview(QDialog):
         self.ui.tbl_audio_gen.horizontalHeader().setStretchLastSection(True)
         self.ui.tbl_audio_gen.setColumnWidth(1, 280)
         self.ui.tbl_audio_gen.setColumnWidth(2, 280)
-        self.ui.tbl_audio_gen.setColumnHidden(4, True)
+        self.ui.tbl_audio_gen.setColumnHidden(4, False)
 
         self.languages = [lang for lang in languages]
         lang = ComboDelegate(self.ui.tbl_presets, self.languages)
@@ -233,10 +235,11 @@ class Preview(QDialog):
 
         ######## Presets ##############################
         # initialize Presets -> Voice ComboDelegate
+        self.decks = [deck for deck in mw.col.decks.all_names()]
         self._update_voices()
 
         self.mdl_presets = DictTableModel(
-            self, cfg.presets, ["source", "destination", "voice", "language"]
+            self, cfg.presets, ["source", "destination", "voice", "language", "deck"]
         )
         self.ui.tbl_presets.setModel(self.mdl_presets)
         self.ui.tbl_presets.resizeColumnsToContents()
@@ -247,12 +250,19 @@ class Preview(QDialog):
         self.ui.tbl_presets.setColumnWidth(2, 150)
         self.ui.tbl_presets.setColumnWidth(3, 100)
 
+        # Set up Decks ComboDelegate
+        decks = ComboDelegate(self.ui.tbl_presets, self.decks)
+        self.ui.tbl_presets.setItemDelegateForColumn(4, decks)
+
         self.mdl_presets.dataChanged.connect(
             lambda: self.mdl_preview.refresh_data(self.note_ids)
         )
         self.mdl_presets.layoutChanged.connect(
             lambda: self.mdl_preview.refresh_data(self.note_ids)
         )
+
+        self.mdl_presets.dataChanged.connect(self._reset_progress_bar)
+        self.mdl_presets.layoutChanged.connect(self._reset_progress_bar)
 
         qconnect(
             self.ui.btn_preset_add.clicked,
@@ -359,6 +369,8 @@ class Preview(QDialog):
         if note_preset >= 0:
             preset = cfg.presets[note_preset]
 
+            self.is_running = True
+
             print(
                 f"\n✓ Processing {note_id}: {self.tracking + 1} out of {self.record_count}"
             )
@@ -382,7 +394,6 @@ class Preview(QDialog):
 
     def _generate_next(self):
         if self.tracking < self.record_count:
-            self.is_running = True
             self.ui.tbl_audio_gen.selectRow(self.tracking)
             self._generate_audio()
         else:
@@ -593,10 +604,14 @@ class Preview(QDialog):
         row_idx = model.rowCount()
         self._add_row_to_table(model, table_view)
 
+        # We are blocking signals here to avoid recalculating the audio preview table
+        # after adding an empty preset
+        model.blockSignals(True)
         model.setData(model.index(row_idx, 2), self.voices[0], Qt.ItemDataRole.EditRole)
         model.setData(
             model.index(row_idx, 3), self.languages[4], Qt.ItemDataRole.EditRole
         )
+        model.blockSignals(False)
 
     @staticmethod
     def _add_row_to_table(model: QAbstractTableModel, table_view: QAbstractItemView):

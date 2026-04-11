@@ -1,6 +1,13 @@
+from dataclasses import fields
 from aqt import QAbstractTableModel, QModelIndex, mw
 from aqt.qt import Qt
-from .utils import is_preset_valid, sanitize_text, has_audio
+from .utils import (
+    find_decks,
+    is_preset_valid,
+    is_preset_valid,
+    sanitize_text,
+    has_audio,
+)
 
 from .config import cfg
 
@@ -63,57 +70,72 @@ class ModelAudioTable(GenericTable):
 
         for nid in ids:
             note = mw.col.get_note(nid)
-            # Find presets where both source and destination fields exist in the note
-            # the index (i) coincides with the presets table
-            valid_presets = [
-                (i, p) for i, p in enumerate(cfg.presets, 0) if is_preset_valid(note, p)
+
+            # We index them now, because we filter them out and sort them later
+            config_presets = [
+                {"index": index, "preset": preset}
+                for index, preset in enumerate(cfg.presets, 0)
             ]
 
-            print("valid_presets:", valid_presets)
+            matched_presets = []
 
-            # sometimes anki was sure that -99 is the note_id after pressing "generate audio"
-            if not valid_presets:
-                # No matching presets found for this specific note
+            print("\nconfig_presets:", config_presets)
+
+            for p in config_presets:
+                if is_preset_valid(note, p["preset"]):
+                    matched_presets.append(p)
+
+            print("\nmatched_presets:", matched_presets)
+
+            if not matched_presets:
                 self._data.append(
                     [
                         str(nid),
                         f"Fields: {note.keys()}",
-                        "No presets associated with the note",
-                        "ERROR!",
+                        f"Decks: {find_decks(note)}",
+                        "No presets found!",
                         "-99",
                     ]
                 )
                 continue
 
-            for index, preset in valid_presets:
-                src_name = preset["source"]
-                dst_name = preset["destination"]
-                src_content = note[src_name]
-                dst_content = note[dst_name]
-                # If source is empty, we don't really need to generate anything
-                if src_content:
-                    if not (has_audio(dst_content) and cfg.preserve_audio):
-                        result = sanitize_text(src_content, cfg.regex_rules)
+            # first we sort our presets so that children are before their parents
+            # English::Phrasal_Verbs::A2'
+            # English::Phrasal_Verbs
+            presets = sorted(
+                matched_presets,
+                # the more ::, the deeper we're in the tree
+                key=lambda x: x["preset"].get("deck").count("::"),
+                reverse=True,
+            )
+
+            print("\nsorted_presets:", presets)
+
+            processed = []
+
+            for item in presets:
+                index = item["index"]
+                preset = item["preset"]
+                src = preset["source"]
+                dst = preset["destination"]
+                card = {"src": note[src], "dst": note[dst]}
+                # if source is empty, or we already applied a preset
+                # to the note = do nothing
+                # the same source and a different destination = new preset
+                if card["src"] and card not in processed:
+                    if not (has_audio(card["dst"]) and cfg.preserve_audio):
+                        result = sanitize_text(card["src"], cfg.regex_rules)
                         self._data.append(
                             [
                                 str(nid),
-                                src_content,
+                                card["src"],
                                 result,
-                                f"{src_name}:{dst_name}",
+                                f"{src}:{dst}",
                                 index,
                             ]
                         )
-                # else:
-                #    # CASE: Preset exists, but the specific field in this note is empty
-                #    self._data.append(
-                #        [
-                #            str(nid),
-                #            f"Empty: [{src_name}]",
-                #            "No data to process",
-                #            "WARNING!",
-                #            "-77",
-                #        ]
-                #    )
+                        # Keeping track what "cards" (src:dst pairs) have been processed
+                        processed.append({"src": card["src"], "dst": card["dst"]})
         self.endResetModel()
 
     def sort(self, column, order=Qt.SortOrder.AscendingOrder):

@@ -1,5 +1,7 @@
 import re
 import sys
+from typing import List
+from anki.cards import Card
 from aqt import mw
 from anki.collection import Collection
 from anki.notes import Note, NoteId
@@ -82,9 +84,36 @@ def has_audio(field_content):
     return bool(re.search(pattern, field_content))
 
 
-def is_preset_valid(note, preset: dict[str, str]) -> bool:
-    """Checks if source and destination fields exist in the already loaded note."""
-    return preset["source"] in note and preset["destination"] in note
+def find_decks(note: Note):
+    """
+    Returns a list of deck names for all cards associated with the given note.
+
+    Since Anki allows individual cards from the same note to be moved to
+    different decks, this function iterates through the note's cards and
+    resolves each deck ID (did) to its corresponding deck name.
+    """
+    decks = []
+    for card in note.cards():
+        decks.append(mw.col.decks.name(card.did))
+    return decks
+
+
+def is_preset_valid(note: Note, preset: dict[str, str]):
+    """
+    Checks if a preset's fields exist in the note and if the note
+    can be found in the preset deck.
+    """
+    fields = note.keys()
+    if preset["source"] not in fields or preset["destination"] not in fields:
+        return False
+
+    target_deck = preset.get("deck")
+    if not target_deck:
+        return False
+
+    # Check if the note has at least one card in the specified deck
+    # ('English::Phrasal_Verbs::A2').startswith(English::Phrasal_Verbs)
+    return any(note.startswith(target_deck) for note in find_decks(note))
 
 
 def remove_audio_tags(note: Note, field: str):
