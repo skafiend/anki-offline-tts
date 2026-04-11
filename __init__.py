@@ -112,7 +112,7 @@ class Preview(QDialog):
         self.ui.tbl_audio_gen.horizontalHeader().setStretchLastSection(True)
         self.ui.tbl_audio_gen.setColumnWidth(1, 280)
         self.ui.tbl_audio_gen.setColumnWidth(2, 280)
-        self.ui.tbl_audio_gen.setColumnHidden(4, False)
+        self.ui.tbl_audio_gen.setColumnHidden(4, True)
 
         self.languages = [lang for lang in languages]
         lang = ComboDelegate(self.ui.tbl_presets, self.languages)
