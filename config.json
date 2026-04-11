@@ -2,13 +2,10 @@
   "settings": 
     {"virt_env": "/media/stuff/Development/virt_env/rocm/bin/python", "hsa": { "ver": "11.0.0", "enabled": false}},
     "model": {"exaggeration": 0.5, "cfg_weight": 0.5, "temp": 0.8, "path": "/media/stuff/Development/models/chatterbox"},
-    "preserve_audio": true,
+    "preserve_audio": false,
   "presets": 
     [{"source": "cloze_1", "destination": "audio_1", "language": "English", "voice": "en.mp3", "deck": "Default"},
     {"source": "cloze_2", "destination": "audio_2", "language": "English", "voice": "en.mp3", "deck": "Default"},
-    {"source": "cloze_3", "destination": "audio_3", "language": "English", "voice": "en.mp3", "deck": "Default"},
-    {"source": "cloze_4", "destination": "audio_4", "language": "English", "voice": "en.mp3", "deck": "Default"},
-    {"source": "cloze_5", "destination": "audio_5", "language": "English", "voice": "en.mp3", "deck": "Default"},
     {"source": "front", "destination": "front", "language": "English", "voice": "en.mp3", "deck": "Default"}],
   "regex_rules": [{"pattern": "&nbsp;", "replace": " ", "comment": "Replace non-breaking spaces with ' '"},
     {"pattern": "\\[.*?\\]", "replace": "", "comment": "Ignore text in []."},

@@ -4,6 +4,7 @@ from aqt import (
     QComboBox,
     QDoubleSpinBox,
     QFileDialog,
+    QLabel,
     QLineEdit,
     QSlider,
     QTimer,
@@ -90,8 +91,9 @@ class Preview(QDialog):
         ############################## Audio preview ##############################
 
         # preserve audio checkbox
+        cfg.preserve_audio = False
         self.ui.ck_preserve_audio.setChecked(cfg.preserve_audio)
-        qconnect(self.ui.ck_preserve_audio.toggled, self._preserve_audio)
+        qconnect(self.ui.ck_preserve_audio.toggled, self._update_preview)
 
         self.note_ids = ids
         self.ui.btn_cancel.setEnabled(False)
@@ -102,7 +104,6 @@ class Preview(QDialog):
             ["Note ID", "Text Before", "Processed Text", "Status", "Preset"],
         )
         self.ui.tbl_audio_gen.setModel(self.mdl_preview)
-        self.mdl_preview.sort(4)
 
         self.cancel_event = Event()
         qconnect(self.ui.btn_generate.clicked, self._start_task)
@@ -254,19 +255,12 @@ class Preview(QDialog):
         decks = ComboDelegate(self.ui.tbl_presets, self.decks)
         self.ui.tbl_presets.setItemDelegateForColumn(4, decks)
 
-        self.mdl_presets.dataChanged.connect(
-            lambda: self.mdl_preview.refresh_data(self.note_ids)
-        )
-        self.mdl_presets.layoutChanged.connect(
-            lambda: self.mdl_preview.refresh_data(self.note_ids)
-        )
-
-        self.mdl_presets.dataChanged.connect(self._reset_progress_bar)
-        self.mdl_presets.layoutChanged.connect(self._reset_progress_bar)
+        self.mdl_presets.dataChanged.connect(self._update_preview)
+        self.mdl_presets.layoutChanged.connect(self._update_preview)
 
         qconnect(
             self.ui.btn_preset_add.clicked,
-            lambda: self._add_new_preset(self.mdl_presets, self.ui.tbl_presets),
+            lambda: self._add_preset(self.mdl_presets, self.ui.tbl_presets),
         )
         qconnect(
             self.ui.btn_preset_remove.clicked,
@@ -451,6 +445,21 @@ class Preview(QDialog):
         self.ui.tbl_audio_gen.selectRow(self.tracking)
         self.ui.prg_audio_preview.setValue(self.tracking)
 
+    def update_placeholder(self):
+        # if self.mdl_preview.rowCount() == 0:
+        if self.mdl_preview.rowCount() == 0:
+            self.placeholder_label = QLabel(
+                "Selected notes doesn't contain data or you're preserving the existing audio. Fill out the notes or uncheck the checkbox",
+                self.ui.tbl_audio_gen,
+            )
+            self.placeholder_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.placeholder_label.show()
+            self.placeholder_label.resize(self.ui.tbl_audio_gen.size())
+            self.placeholder_label.move(0, 0)
+        else:
+            if hasattr(self, "placeholder_label"):
+                self.placeholder_label.hide()
+
     ############################## Settings ##############################
 
     def _open_settings(self):
@@ -465,14 +474,14 @@ class Preview(QDialog):
             self.ui.splitter.setSizes([300, 1])
             self.settings_visible = True
 
-    def _preserve_audio(self):
+    def _update_preview(self):
         if self.ui.ck_preserve_audio.isChecked():
             cfg.preserve_audio = True
         else:
             cfg.preserve_audio = False
 
         self.mdl_preview.refresh_data(self.note_ids)
-        self.mdl_preview.sort(4)
+        self.update_placeholder()
         self._reset_progress_bar()
 
     ######### Chatterbox ################################################
@@ -597,9 +606,7 @@ class Preview(QDialog):
         spinbox.valueChanged.connect(update_slider)
 
     ######### Edit tables ################################################
-    def _add_new_preset(
-        self, model: QAbstractTableModel, table_view: QAbstractItemView
-    ):
+    def _add_preset(self, model: QAbstractTableModel, table_view: QAbstractItemView):
         # the index will be right after we add an empty row
         row_idx = model.rowCount()
         self._add_row_to_table(model, table_view)
@@ -611,6 +618,7 @@ class Preview(QDialog):
         model.setData(
             model.index(row_idx, 3), self.languages[4], Qt.ItemDataRole.EditRole
         )
+        model.setData(model.index(row_idx, 4), "Default", Qt.ItemDataRole.EditRole)
         model.blockSignals(False)
 
     @staticmethod
