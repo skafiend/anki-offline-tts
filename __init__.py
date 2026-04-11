@@ -101,7 +101,13 @@ class Preview(QDialog):
         self.mdl_preview = ModelAudioTable(
             self,
             ids,
-            ["Note ID", "Text Before", "Processed Text", "Status", "Preset"],
+            [
+                "nid",
+                "before",
+                "after",
+                "preset",
+                "preset ID",
+            ],
         )
         self.ui.tbl_audio_gen.setModel(self.mdl_preview)
 
@@ -111,8 +117,9 @@ class Preview(QDialog):
         qconnect(self.ui.btn_settings.clicked, self._open_settings)
 
         self.ui.tbl_audio_gen.horizontalHeader().setStretchLastSection(True)
-        self.ui.tbl_audio_gen.setColumnWidth(1, 280)
-        self.ui.tbl_audio_gen.setColumnWidth(2, 280)
+        self.ui.tbl_audio_gen.setColumnWidth(0, 40)
+        self.ui.tbl_audio_gen.setColumnWidth(1, 275)
+        self.ui.tbl_audio_gen.setColumnWidth(2, 275)
         self.ui.tbl_audio_gen.setColumnHidden(4, True)
 
         self.languages = [lang for lang in languages]

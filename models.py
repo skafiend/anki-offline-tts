@@ -130,7 +130,7 @@ class ModelAudioTable(GenericTable):
                                 str(nid),
                                 card["src"],
                                 result,
-                                f"{src}:{dst}",
+                                f"{preset['deck']} / {src}:{dst}",
                                 index,
                             ]
                         )
