@@ -4,7 +4,6 @@ from aqt.qt import Qt
 from .utils import (
     find_decks,
     is_preset_valid,
-    is_preset_valid,
     sanitize_text,
     has_audio,
 )
@@ -68,52 +67,43 @@ class ModelAudioTable(GenericTable):
         self.beginResetModel()
         self._data.clear()
 
+        # first we sort our presets so that children are before their parents
+        # English::Phrasal_Verbs::A2'
+        # English::Phrasal_Verbs
+        sorted_presets = sorted(
+            [{"index": i, "preset": p} for i, p in enumerate(cfg.presets)],
+            key=lambda x: x["preset"].get("deck", "").count("::"),
+            reverse=True,
+        )
+
         for nid in ids:
             note = mw.col.get_note(nid)
-
-            # We index them now, because we filter them out and sort them later
-            config_presets = [
-                {"index": index, "preset": preset}
-                for index, preset in enumerate(cfg.presets, 0)
-            ]
+            note_fields = note.keys()
+            note_decks = find_decks(note)
 
             matched_presets = []
 
-            print("\nconfig_presets:", config_presets)
-
-            for p in config_presets:
-                if is_preset_valid(note, p["preset"]):
+            for p in sorted_presets:
+                if is_preset_valid(note_fields, note_decks, p["preset"]):
                     matched_presets.append(p)
-
-            print("\nmatched_presets:", matched_presets)
 
             if not matched_presets:
                 self._data.append(
                     [
                         str(nid),
-                        f"Fields: {note.keys()}",
-                        f"Decks: {find_decks(note)}",
+                        f"Fields: {note_fields}",
+                        f"Decks: {note_decks}",
                         "No presets found!",
                         "-99",
                     ]
                 )
                 continue
 
-            # first we sort our presets so that children are before their parents
-            # English::Phrasal_Verbs::A2'
-            # English::Phrasal_Verbs
-            presets = sorted(
-                matched_presets,
-                # the more ::, the deeper we're in the tree
-                key=lambda x: x["preset"].get("deck").count("::"),
-                reverse=True,
-            )
-
-            print("\nsorted_presets:", presets)
+            print("\nmatched_presets:", matched_presets)
 
             processed = []
 
-            for item in presets:
+            for item in matched_presets:
                 index = item["index"]
                 preset = item["preset"]
                 src = preset["source"]

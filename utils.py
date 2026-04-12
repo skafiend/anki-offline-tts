@@ -98,12 +98,11 @@ def find_decks(note: Note):
     return decks
 
 
-def is_preset_valid(note: Note, preset: dict[str, str]):
+def is_preset_valid(fields: list[str], decks: list[str], preset: dict[str, str]):
     """
     Checks if a preset's fields exist in the note and if the note
     can be found in the preset deck.
     """
-    fields = note.keys()
     if preset["source"] not in fields or preset["destination"] not in fields:
         return False
 
@@ -113,7 +112,7 @@ def is_preset_valid(note: Note, preset: dict[str, str]):
 
     # Check if the note has at least one card in the specified deck
     # ('English::Phrasal_Verbs::A2').startswith(English::Phrasal_Verbs)
-    return any(note.startswith(target_deck) for note in find_decks(note))
+    return any(note.startswith(target_deck) for note in decks)
 
 
 def remove_audio_tags(note: Note, field: str):
