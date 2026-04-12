@@ -338,12 +338,8 @@ To open an addon window, go to Browser -> Edit -> ChatterBox: Generate audio.
 
 ![presets](img/02_presets.png)
 
-Audio samples are stored in: ../Anki2/addons21/749820458/user_files/
+Audio samples are stored in: `../Anki2/addons21/749820458/user_files/`
 Try using 10-second (or less) samples for voice cloning.
-
-Mode: 
- - Append: Remove existing audio tags and add an audio.
- - Overwrite: Replace everything with an audio
 
 ### Text processing
 
