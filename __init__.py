@@ -193,12 +193,8 @@ class Preview(QDialog):
         self.ui.tbl_regex.resizeColumnsToContents()
         self.ui.tbl_regex.horizontalHeader().setStretchLastSection(True)
 
-        self.mdl_regex.dataChanged.connect(
-            lambda: self.mdl_preview.refresh_data(self.note_ids)
-        )
-        self.mdl_regex.layoutChanged.connect(
-            lambda: self.mdl_preview.refresh_data(self.note_ids)
-        )
+        self.mdl_regex.dataChanged.connect(lambda: self.mdl_preview.refresh_data())
+        self.mdl_regex.layoutChanged.connect(lambda: self.mdl_preview.refresh_data())
 
         qconnect(
             self.ui.btn_regex_add.clicked,
@@ -332,7 +328,7 @@ class Preview(QDialog):
         text = widget.text()
         print(f"Saving {widget}: {text}")
         setattr(cfg, attr_name, text)
-        self.mdl_preview.refresh_data(self.note_ids)
+        self.mdl_preview.refresh_data()
         # Remove focus after pressing enter
         widget.clearFocus()
 
@@ -487,7 +483,7 @@ class Preview(QDialog):
         else:
             cfg.preserve_audio = False
 
-        self.mdl_preview.refresh_data(self.note_ids)
+        self.mdl_preview.refresh_data()
         self.update_placeholder()
         self._reset_progress_bar()
 

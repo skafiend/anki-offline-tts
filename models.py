@@ -1,4 +1,6 @@
 from dataclasses import fields
+from typing import List
+from anki.notes import Note
 from aqt import QAbstractTableModel, QModelIndex, mw
 from aqt.qt import Qt
 from .utils import (
@@ -45,8 +47,10 @@ class GenericTable(QAbstractTableModel):
 class ModelAudioTable(GenericTable):
     def __init__(self, parent, note_ids: list[int], headers) -> None:
         super().__init__(parent, headers, data=[])
-        self.note_ids = note_ids
-        self.refresh_data(note_ids)
+        # get the data one time when the dialog pops up to avoid reaccessing the db when
+        # we need to update the tableview
+        self.notes: List[Note] = [mw.col.get_note(nid) for nid in note_ids]
+        self.refresh_data()
 
         print(f"\n self._grid_preview: {self._data}")
 
@@ -63,7 +67,7 @@ class ModelAudioTable(GenericTable):
     # We use this method at least twice:
     # - when we populate the table for a first time
     # - when presets are changed and we want to update the preview, we call it directly from the dialog
-    def refresh_data(self, ids: list[int]):
+    def refresh_data(self):
         self.beginResetModel()
         self._data.clear()
 
@@ -76,8 +80,7 @@ class ModelAudioTable(GenericTable):
             reverse=True,
         )
 
-        for nid in ids:
-            note = mw.col.get_note(nid)
+        for note in self.notes:
             note_fields = note.keys()
             note_decks = find_decks(note)
 
@@ -90,7 +93,7 @@ class ModelAudioTable(GenericTable):
             if not matched_presets:
                 self._data.append(
                     [
-                        str(nid),
+                        note.id,
                         f"Fields: {note_fields}",
                         f"Decks: {note_decks}",
                         "No presets found!",
@@ -117,7 +120,7 @@ class ModelAudioTable(GenericTable):
                         result = sanitize_text(card["src"], cfg.regex_rules)
                         self._data.append(
                             [
-                                str(nid),
+                                note.id,
                                 card["src"],
                                 result,
                                 f"{preset['deck']} / {src}:{dst}",
